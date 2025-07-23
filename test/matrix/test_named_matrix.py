@@ -1,6 +1,4 @@
-import unittest
 import collections
-import time
 
 import bspump
 import bspump.matrix
@@ -56,7 +54,7 @@ class TestNamedMatrix(bspump.unittest.TestCase):
         matrix = bspump.matrix.NamedMatrix(app=self.App)
         n = 100
         for i in range(n):
-            index = matrix.add_row(str(i))
+            matrix.add_row(str(i))
 
         for i in range(0, 5):
             matrix.close_row(str(i))
@@ -69,7 +67,7 @@ class TestNamedMatrix(bspump.unittest.TestCase):
         n = 100
         for i in range(n):
             name = "id_" + str(i)
-            index = matrix.add_row(name)
+            matrix.add_row(name)
             index_obtained = matrix.get_row_index(name)
             self.assertEqual(i, index_obtained)
 
@@ -78,6 +76,6 @@ class TestNamedMatrix(bspump.unittest.TestCase):
         n = 100
         for i in range(n):
             name = "id_" + str(i)
-            index = matrix.add_row(name)
+            matrix.add_row(name)
             name_obtained = matrix.get_row_name(i)
             self.assertEqual(name, name_obtained)
