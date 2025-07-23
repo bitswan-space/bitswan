@@ -40,7 +40,7 @@ class TestTimeWindowMatrix(bspump.unittest.TestCase):
         matrix = bspump.matrix.TimeWindowMatrix(
             app=self.App, columns=3, clock_driven=False
         )
-        row_index = matrix.add_row("abc")
+        matrix.add_row("abc")
         self.assertEqual(matrix.Array.shape[0], len(matrix.WarmingUpCount))
 
     # def test_matrix_close_row(self):
@@ -73,7 +73,7 @@ class TestTimeWindowMatrix(bspump.unittest.TestCase):
             columns=columns,
             clock_driven=False,
         )
-        row_index = matrix.add_row("abc")
+        matrix.add_row("abc")
 
         target_ts = matrix.TimeConfig.get_start()
         added = matrix.advance(target_ts)
