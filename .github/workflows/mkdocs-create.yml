@@ -39,5 +39,5 @@ jobs:
           protocol: ftps
           local-dir: ./doc/site/
           server-dir: /
-          delete: true # This option deletes files on the server that are not present in your local-dir.
-          insecure: true
+          dangerous-clean-slate: true
+          security: loose
