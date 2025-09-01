@@ -29,15 +29,13 @@ jobs:
           cd ./doc
           mkdocs build
 
-      - name: Deploy MkDocs to Server via FTPS # Step 5: Upload the built site using FTP/FTPS
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.0
+
+      - name: Deploy via FTP
+        uses: sebastianpopp/ftp-action@releases/v2
         with:
-          server: ${{ secrets.FTP_HOST }}
-          username: ${{ secrets.FTP_USER }}
+          host: ${{ secrets.FTP_HOST }}
+          user: ${{ secrets.FTP_USER }}
           password: ${{ secrets.FTP_PASS }}
-          port: 21
-          protocol: ftps
-          local-dir: ./doc/site/
-          server-dir: /
-          dangerous-clean-slate: true
-          security: loose
+          localDir: "./doc/site/"
+          remoteDir: "/"
+          options: "--delete --transfer-all --verbose"
