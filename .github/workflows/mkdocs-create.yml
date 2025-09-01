@@ -38,4 +38,4 @@ jobs:
           password: ${{ secrets.FTP_PASS }}
           localDir: "./doc/site/"
           remoteDir: "/"
-          options: "--delete --transfer-all --verbose"
+          options: "--delete --transfer-all --verbose --no-perms"
