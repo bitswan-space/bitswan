@@ -2,7 +2,7 @@ name: Deploy MkDocs Documentation via FTPS
 
 on:
   push:
-    branches: [ main, mkdocs ]
+    branches: [ main ]
 
 jobs:
   build_and_deploy:
