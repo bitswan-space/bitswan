@@ -5,12 +5,33 @@ from .trigger import Trigger
 
 class CronTrigger(Trigger):
     """
-    Trigger that allows to use crontab syntax
-    for specifying freqency of script execution
+    Trigger that uses crontab syntax for specifying execution frequency.
+
+    CronTrigger allows you to schedule pipeline execution using standard
+    cron expressions. It calculates the next execution time based on the
+    cron string and fires when that time is reached.
+
+    Cron syntax:
+        * * * * *
+        | | | | |
+        | | | | +-- Day of week (0-7, 0 and 7 are Sunday)
+        | | | +---- Month (1-12)
+        | | +------ Day of month (1-31)
+        | +-------- Hour (0-23)
+        +---------- Minute (0-59)
+
+    Examples:
+        "0 9 * * *"     # Daily at 9:00 AM
+        "*/15 * * * *"  # Every 15 minutes
+        "0 0 1 * *"     # First day of every month at midnight
+        "0 9 * * 1"     # Every Monday at 9:00 AM
+
+    Warning: Always use timezone-aware datetime objects for init_time
+    to avoid timezone-related issues.
     """
 
     def __init__(self, app, cron_string, init_time, id=None):
-        super().__init__(app, id)
+        super().__init__(app, id=id)
         self.cron_string = cron_string
         self.init_time = init_time
         self.next_trigger_time = self.get_new_time(cron_string, init_time)
