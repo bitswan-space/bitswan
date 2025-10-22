@@ -230,11 +230,27 @@ class Source(asab.Configurable):
 
 class TriggerSource(Source):
     """
-    Description:
+    A specialized source that responds to trigger events.
 
-    |
+    TriggerSource is designed to work with BitSwan's trigger system. It waits
+    for trigger events and executes a cycle() method when triggered. This allows
+    for event-driven data processing in pipelines.
 
-    :return:
+    Key features:
+    - Waits for trigger events using asyncio.Event
+    - Executes cycle() method when triggered
+    - Manages multiple triggers simultaneously
+    - Handles trigger lifecycle events
+
+    Usage:
+        class MyTriggerSource(TriggerSource):
+            async def cycle(self, *args, **kwargs):
+                # Your trigger logic here
+                await self.Pipeline.process({"data": "triggered"})
+
+        # Attach to any trigger type
+        source = MyTriggerSource(app, pipeline)
+        source.on(some_trigger)
     """
 
     def __init__(self, app, pipeline, id=None, config=None):

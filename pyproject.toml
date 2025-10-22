@@ -50,7 +50,9 @@ dependencies = [
         "jinja2>=3.1.6",
         "idna>=3.7",
         "cryptography>=44.0.1",
-        "importlib-resources"
+        "importlib-resources",
+        "fastapi",
+        "uvicorn"
 ]
 
 [project.optional-dependencies]

@@ -1,3 +1,5 @@
+[![Docs](https://img.shields.io/badge/docs-latest-brightgreen)](https://docs.bitswan.space)
+
 Bitswan: A tool for building Pipelines & Automations in Jupyter
 ===============================================
 

@@ -3,13 +3,32 @@ import random
 
 
 class Trigger(abc.ABC):
+    """
+    Abstract base class for all trigger types in BitSwan.
+
+    Triggers are components that fire events at specific times or under
+    specific conditions. When a trigger fires, it notifies all attached
+    sources to execute their cycle() method.
+
+    Key features:
+    - Manages a set of attached sources
+    - Handles firing triggers (notifying sources)
+    - Supports pause/resume functionality
+    - Tracks trigger state and timing
+    - Supports maximum triggered source limits
+
+    Usage:
+        trigger = SomeTrigger(app)
+        source = MyTriggerSource(app, pipeline)
+        source.on(trigger)  # Attach source to trigger
+    """
+
     def __init__(self, app, max_triggered=None, id=None):
         self.Id = id if id is not None else self.__class__.__name__
         self.Sources = set()
         self.Paused = False
         self.LastFireAt = 0
         self.Loop = app.Loop
-
         self._max_triggered = max_triggered
 
     def add(self, source):
