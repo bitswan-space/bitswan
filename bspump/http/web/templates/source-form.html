@@ -1,6 +1,26 @@
 <html>
 <head>
     <link rel="stylesheet" href="/styles/tailwind.css">
+    <style>
+        html {
+            height: auto;
+            min-height: 100vh;
+            background: linear-gradient(to bottom, rgb(207 250 254), rgb(165 243 252));
+        }
+        body {
+            height: auto;
+            min-height: 100vh;
+            width: 100%;
+            display: block;
+        }
+        #main-form {
+            display: block;
+            height: auto;
+            width: 100%;
+            max-width: 64rem;
+            margin: 0 auto;
+        }
+    </style>
     <script>
         function submitForm() {
             let isValid = true;
@@ -24,7 +44,7 @@
         }
     </script>
 </head>
-<body class="min-h-screen bg-gradient-to-b from-cyan-50 to-cyan-100 bg-cyan-200 flex justify-center items-center py-10 px-4 sm:px-6 lg:px-8">
+<body class="py-10 px-4 sm:px-6 lg:px-8">
     <form id="main-form" method="post" enctype="multipart/form-data"
           class="w-full max-w-4xl bg-neutral-50 shadow-xl rounded-lg p-8 border border-cyan-00">
 
