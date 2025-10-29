@@ -1,17 +1,21 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/styles/tailwind.css">
     <style>
         html {
             height: auto;
             min-height: 100vh;
-            background: linear-gradient(to bottom, rgb(207 250 254), rgb(165 243 252));
+            background: linear-gradient(135deg, #f5f7fa 0%, #e8f0f5 100%);
         }
         body {
             height: auto;
             min-height: 100vh;
             width: 100%;
             display: block;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
         }
         #main-form {
             display: block;
@@ -19,6 +23,52 @@
             width: 100%;
             max-width: 64rem;
             margin: 0 auto;
+            background: white;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            border-radius: 12px;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        .form-container {
+            padding: 2.5rem;
+        }
+        .form-field-group {
+            margin-bottom: 1.75rem;
+        }
+        .submit-button {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            transition: all 0.2s ease-in-out;
+            box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.3);
+        }
+        .submit-button:hover {
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 8px -1px rgba(59, 130, 246, 0.4);
+        }
+        .submit-button:active {
+            transform: translateY(0);
+        }
+        .loading-overlay {
+            backdrop-filter: blur(4px);
+        }
+        .loading-spinner {
+            border: 3px solid #f3f4f6;
+            border-top: 3px solid #3b82f6;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .error-message {
+            margin-top: 0.5rem;
+            padding: 0.5rem 0.75rem;
+            background-color: #fef2f2;
+            border-left: 3px solid #ef4444;
+            border-radius: 4px;
         }
     </style>
     <script>
@@ -29,14 +79,15 @@
             requiredFields.forEach(field => {
                 if (!field.value.trim()) {
                     isValid = false;
-                    field.style.border = "2px solid red";
+                    field.style.border = "2px solid #ef4444";
+                    field.style.borderRadius = "6px";
                 } else {
                     field.style.border = "";
                 }
             });
 
             if (!isValid) {
-                alert("All required fields must be filled.");
+                alert("Please fill in all required fields.");
                 return;
             }
             document.getElementById("loading").style.display = "block";
@@ -45,38 +96,38 @@
     </script>
 </head>
 <body class="py-10 px-4 sm:px-6 lg:px-8">
-    <form id="main-form" method="post" enctype="multipart/form-data"
-          class="w-full max-w-4xl bg-neutral-50 shadow-xl rounded-lg p-8 border border-cyan-00">
+    <form id="main-form" method="post" enctype="multipart/form-data">
 
         <!-- Loading Overlay -->
         <div id="loading" style="display:none">
-            <div class="fixed top-0 left-0 h-screen w-screen bg-black bg-opacity-50 z-50 flex justify-center items-center">
-                <div class="bg-neutral-50 p-4 rounded-lg shadow-lg">
-                    <div class="text-center text-gray-700 font-semibold">Processing...</div>
+            <div class="fixed top-0 left-0 h-screen w-screen bg-black bg-opacity-50 z-50 flex justify-center items-center loading-overlay">
+                <div class="bg-white p-8 rounded-xl shadow-2xl max-w-sm w-full mx-4">
+                    <div class="loading-spinner"></div>
+                    <div class="text-center text-gray-700 font-semibold text-lg">Processing...</div>
                 </div>
             </div>
         </div>
 
         <!-- Form Content -->
-        <div class="space-y-8">
+        <div class="form-container">
             <!-- Optional Intro Text -->
             {% if form_intro %}
-                <div class="text-lg text-gray-800">{{ form_intro|safe }}</div>
+                <div class="mb-8 text-lg text-gray-700 leading-relaxed">{{ form_intro|safe }}</div>
             {% endif %}
 
             <!-- Dynamic Form Fields -->
             {% for field in fields %}
-                <div class="space-y-1">
+                <div class="form-field-group">
                     {{ field.html(defaults[field.name])|safe }}
                     {% if field.name in errors %}
-                        <div class="text-red-500 text-sm">{{ errors[field.name] }}</div>
+                        <div class="error-message text-red-500 text-sm font-medium">{{ errors[field.name] }}</div>
                     {% endif %}
                 </div>
             {% endfor %}
 
             <!-- Submit Button -->
-            <div class="mt-10 flex justify-end">
-                <button type="button" onclick="submitForm()" class="bg-cyan-600 hover:bg-cyan-900 text-slate-100 font-bold py-2 px-4 rounded-lg">
+            <div class="mt-10 pt-6 border-t border-gray-200 flex justify-end">
+                <button type="button" onclick="submitForm()" class="submit-button text-white font-semibold py-3 px-8 rounded-lg text-base">
                     Submit
                 </button>
             </div>
