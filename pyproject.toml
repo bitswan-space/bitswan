@@ -70,7 +70,10 @@ bitswan-notebook = "bspump.main:main"
 
 
 [tool.ruff]
-lint.ignore = ["E501", "E402", "E721", "E712"]
+lint.ignore = ["E501", "E402", "E721", "E712", "F403", "F405"]
+exclude = [
+    "test/jupyter/expected.py",
+]
 
 [tool.ruff.format]
 # Like Black, use double quotes for strings.
