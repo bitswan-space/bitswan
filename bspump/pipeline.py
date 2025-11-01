@@ -269,8 +269,8 @@ class Pipeline(abc.ABC, bspump.asab.Configurable):
             }
             print(
                 f"""
-            Event: {alert_data['event']}
-            Traceback: {alert_data['traceback']}"""
+            Event: {alert_data["event"]}
+            Traceback: {alert_data["traceback"]}"""
             )
             # send alert
             self.App.AlertService.trigger(
@@ -809,16 +809,16 @@ class Pipeline(abc.ABC, bspump.asab.Configurable):
         )
 
         if isinstance(processor, Analyzer):
-            self.ProfilerCounter[
-                "analyzer_" + processor.Id
-            ] = self.MetricsService.create_counter(
-                "bspump.pipeline.profiler",
-                tags={
-                    "analyzer": processor.Id,
-                    "pipeline": self.Id,
-                },
-                init_values={"duration": 0.0, "run": 0},
-                reset=self.ResetProfiler,
+            self.ProfilerCounter["analyzer_" + processor.Id] = (
+                self.MetricsService.create_counter(
+                    "bspump.pipeline.profiler",
+                    tags={
+                        "analyzer": processor.Id,
+                        "pipeline": self.Id,
+                    },
+                    init_values={"duration": 0.0, "run": 0},
+                    reset=self.ResetProfiler,
+                )
             )
 
     def build(self, source, *processors):

@@ -133,7 +133,7 @@ class StreamServerSource(Source):
 
         await asyncio.gather(
             *[self._handle_accept(sock) for sock in self.AcceptingSockets],
-            return_exceptions=True
+            return_exceptions=True,
         )
 
     async def _handle_accept(self, sock):

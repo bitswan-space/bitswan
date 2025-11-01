@@ -29,22 +29,20 @@ class Module(abc.ABC):
     from .my_service import MyService
 
     # Extend ASAB configuration defaults
-    asab.Config.add_defaults({
-            'my_module': {
-                    'foo': 'bar'
-            }
-    })
+    asab.Config.add_defaults({"my_module": {"foo": "bar"}})
+
 
     class MyModule(asab.Module):
-            def __init__(self, app):
-                    super().__init__(app)
-                    self.service = MyService(app, "MyService")
+        def __init__(self, app):
+            super().__init__(app)
+            self.service = MyService(app, "MyService")
     ```
 
     And this is how the module is loaded:
 
     ```python
     from mymodule import MyModule
+
     ...
     app.add_module(MyModule)
     ```

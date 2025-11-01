@@ -458,15 +458,16 @@ class Configurable(object):
     Example:
             ```python
             class ConfigurableObject(asab.Configurable):
+                ConfigDefaults = {
+                    "foo": "bar",
+                }
 
-                    ConfigDefaults = {
-                            'foo': 'bar',
-                    }
+                def __init__(self, config_section_name, config=None):
+                    super().__init__(
+                        config_section_name=config_section_name, config=config
+                    )
 
-                    def __init__(self, config_section_name, config=None):
-                            super().__init__(config_section_name=config_section_name, config=config)
-
-                            config_foo = self.Config.get('foo')
+                    config_foo = self.Config.get("foo")
             ```
     """
 

@@ -98,13 +98,13 @@ class TaskService(Service):
 
         ```python
         class MyClass(object):
-                def __init__(self, app):
-                        ...
-                        app.TaskService.run_forever(self.my_forever_method)
+            def __init__(self, app):
+                ...
+                app.TaskService.run_forever(self.my_forever_method)
 
-                async def my_forever_method(self):
-                        while True:
-                                await ...
+            async def my_forever_method(self):
+                while True:
+                    await ...
         ```
         """
         for async_fn in async_functions:

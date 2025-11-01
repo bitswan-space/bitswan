@@ -40,13 +40,12 @@ def create_web_server(
 
     ```python
     class MyApplication(asab.Application):
-            async def initialize(self):
-                    web = asab.web.create_web_server(self)
-                    web.add_get('/hello', self.hello)
+        async def initialize(self):
+            web = asab.web.create_web_server(self)
+            web.add_get("/hello", self.hello)
 
-            async def hello(self, request):
-                    return asab.web.rest.json_response(request, data="Hello, world!\n")
-
+        async def hello(self, request):
+            return asab.web.rest.json_response(request, data="Hello, world!\n")
     ```
     """
     app.add_module(Module)

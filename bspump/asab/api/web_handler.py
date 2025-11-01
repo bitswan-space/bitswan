@@ -74,11 +74,10 @@ class APIWebHandler(object):
 
         ```
         {
-                "LANG": "en_GB.UTF-8",
-                "SHELL": "/bin/zsh",
-                "HOME": "/home/foobar",
+            "LANG": "en_GB.UTF-8",
+            "SHELL": "/bin/zsh",
+            "HOME": "/home/foobar",
         }
-
         ```
 
         ---
@@ -97,16 +96,16 @@ class APIWebHandler(object):
 
         ```
         {
-                "general": {
-                        "config_file": "",
-                        "tick_period": "1",
-                        "uid": "",
-                        "gid": ""
-                },
-                "asab:metrics": {
-                        "native_metrics": "true",
-                        "expiration": "60"
-                }
+            "general": {
+                "config_file": "",
+                "tick_period": "1",
+                "uid": "",
+                "gid": "",
+            },
+            "asab:metrics": {
+                "native_metrics": "true",
+                "expiration": "60",
+            },
         }
         ```
 

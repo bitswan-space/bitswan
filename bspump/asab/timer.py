@@ -19,12 +19,12 @@ class Timer(object):
     Examples:
     ```python
     class TimerApplication(asab.Application):
-            async def initialize(self):
-                    self.Timer = asab.Timer(self, self.on_tick, autorestart=True)
-                    self.Timer.start(1) #(1)
+        async def initialize(self):
+            self.Timer = asab.Timer(self, self.on_tick, autorestart=True)
+            self.Timer.start(1)  # (1)
 
-            async def on_tick(self): #(2)
-                    print("Think!")
+        async def on_tick(self):  # (2)
+            print("Think!")
     ```
 
     1. The timer will trigger a message publishing at every second.

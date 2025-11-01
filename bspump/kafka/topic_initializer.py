@@ -126,7 +126,7 @@ class KafkaTopicInitializer(asab.Configurable):
         topic_config=None,
         kafka_component=None,
         pipeline=None,
-        config_file=None
+        config_file=None,
     ):
         """
         Includes topic from config file or dict object. It can also scan Pipeline and get topics from Source or Sink.
