@@ -94,7 +94,7 @@ class NotebookCompiler:
                 self.parse_cell(cell, f)
             step_func_code = f"""@async_step
 async def processor_internal(inject, event):
-{''.join(list(self._cell_processor_contents.values()))}    await inject(event)
+{"".join(list(self._cell_processor_contents.values()))}    await inject(event)
 """
             f.write(step_func_code)
 

@@ -28,7 +28,7 @@ class PostgreSQLLogicalReplicationSource(Source):
     ```
     ############ REPLICATION ##############
     # MODULES
-    shared_preload_libraries = 'wal2json'
+    shared_preload_libraries = "wal2json"
 
     # REPLICATION
     wal_level = logical

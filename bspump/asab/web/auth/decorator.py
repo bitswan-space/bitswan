@@ -24,8 +24,8 @@ def require(*resources):
     ```python
     @asab.web.authz.require("my-app:token:generate")
     async def generate_token(self, request):
-            data = await self.service.generate_token()
-            return asab.web.rest.json_response(request, data)
+        data = await self.service.generate_token()
+        return asab.web.rest.json_response(request, data)
     ```
     """
 
@@ -60,8 +60,8 @@ def noauth(handler):
     ```python
     @asab.web.authz.noauth
     async def get_public_info(self, request):
-            data = await self.service.get_public_info()
-            return asab.web.rest.json_response(request, data)
+        data = await self.service.get_public_info()
+        return asab.web.rest.json_response(request, data)
     ```
     """
     argspec = inspect.getfullargspec(handler)

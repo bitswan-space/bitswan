@@ -35,7 +35,6 @@ class LibsRegLibraryProvider(FileSystemLibraryProvider):
     libsreg+https://libsreg1.example.com,libsreg2.example.com/my-library
     ...
     ```
-
     """
 
     def __init__(self, library, path, layer):

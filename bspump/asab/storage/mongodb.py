@@ -80,8 +80,8 @@ class StorageService(StorageServiceABC):
                 >>> coll = await storage.collection("test-collection")
                 >>> cursor = coll.find({})
                 >>> while await cursor.fetch_next:
-                ... 	obj = cursor.next_object()
-                ... 	pprint.pprint(obj)
+                ...     obj = cursor.next_object()
+                ...     pprint.pprint(obj)
 
         """
 

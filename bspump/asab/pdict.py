@@ -12,13 +12,13 @@ class PersistentDict(dict):
     Example:
             ```python
             class MyApplication(asab.Application):
-                    async def main(self):
-                            pdict = asab.PersistentDict('./pdict.bin')
-                            pdict.load()
-                            counter = pdict['counter'] = pdict.setdefault('counter', 0) + 1
-                            print("Executed for {} times".format(counter))
-                            pdict.store()
-                            self.stop()
+                async def main(self):
+                    pdict = asab.PersistentDict("./pdict.bin")
+                    pdict.load()
+                    counter = pdict["counter"] = pdict.setdefault("counter", 0) + 1
+                    print("Executed for {} times".format(counter))
+                    pdict.store()
+                    self.stop()
             ```
 
     !!! warning
