@@ -3,7 +3,7 @@
 # Get Year and Commit Hash
 YEAR=$(date +%Y)
 COMMIT_HASH=$(git rev-parse --short HEAD)
-IMAGE_TAG="bitswan/pipeline-runtime-environment"
+IMAGE_TAG="bitswan/pre-staging"
 
 # Build and push Docker images
 docker build -t $IMAGE_TAG:latest -t $IMAGE_TAG:$YEAR-${GITHUB_RUN_ID}-git-$COMMIT_HASH -f ./Dockerfile .
