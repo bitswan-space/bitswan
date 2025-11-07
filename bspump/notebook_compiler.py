@@ -210,7 +210,9 @@ auto_pipeline(
                     cleaned_lines = [
                         line
                         for line in clean_code.split("\n")
-                        if line.strip() != "" and not line.strip().startswith("#")
+                        if line.strip() != "" 
+                        and not line.strip().startswith("#")
+                        and not re.search(r'\w+\s*=\s*create_webchat_flow\s*\(', line)
                     ]
                     if cleaned_lines:
                         cleaned_code = "\n".join(cleaned_lines)
