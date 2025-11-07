@@ -36,13 +36,14 @@ class Application(metaclass=Singleton):
     Examples:
     ```python
     class MyApplication(asab.Application):
-            async def main(self):
-                    print("Hello world!")
-                    self.stop()
+        async def main(self):
+            print("Hello world!")
+            self.stop()
+
 
     if __name__ == "__main__":
-            app = MyApplication()
-            app.run()
+        app = MyApplication()
+        app.run()
     ```
     """
 
@@ -60,8 +61,8 @@ class Application(metaclass=Singleton):
 
         ```python
         class MyApplication(asab.Application):
-                def __init__(self):
-                        super().__init__(modules=[asab.web.Module, asab.zookeeper.Module])
+            def __init__(self):
+                super().__init__(modules=[asab.web.Module, asab.zookeeper.Module])
         ```
         """
 

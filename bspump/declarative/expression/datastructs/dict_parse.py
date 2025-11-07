@@ -47,7 +47,7 @@ class DICT_PARSE(Expression):
         arg_type=None,
         arg_set=None,
         arg_unset=None,
-        arg_update=None
+        arg_update=None,
     ):
         super().__init__(app)
 

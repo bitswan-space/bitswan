@@ -12,7 +12,6 @@ L = logging.getLogger(__name__)
 
 
 class WebSocketFactory(object):
-
     """
     wsfactory = asab.web.WebSocketFactory(self)
     websvc.WebApp.router.add_get('/api/ws', wsfactory)
@@ -57,7 +56,7 @@ class WebSocketFactory(object):
         """
         await asyncio.gather(
             *[ws.close(code=code, message=message) for ws in self.WebSockets.values()],
-            return_exceptions=True
+            return_exceptions=True,
         )
 
     async def ping_all(self):
@@ -74,7 +73,7 @@ class WebSocketFactory(object):
         """
         await asyncio.gather(
             *[ws.send_str(data, compress=compress) for ws in self.WebSockets.values()],
-            return_exceptions=True
+            return_exceptions=True,
         )
 
     async def send_json_all(self, data, compress=None):
@@ -83,7 +82,7 @@ class WebSocketFactory(object):
         """
         await asyncio.gather(
             *[ws.send_json(data, compress=compress) for ws in self.WebSockets.values()],
-            return_exceptions=True
+            return_exceptions=True,
         )
 
     def get(self, wsid):

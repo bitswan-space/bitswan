@@ -53,7 +53,7 @@ class DICT(Expression):
         arg_add=None,
         arg_update=None,
         arg_mandatory=None,
-        arg_flatten=None
+        arg_flatten=None,
     ):
         super().__init__(app)
 

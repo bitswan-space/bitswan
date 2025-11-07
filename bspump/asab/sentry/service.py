@@ -111,9 +111,9 @@ class SentryService(Service):
         self.TracesSampleRate = Config.getfloat(
             "asab:alert:sentry", "traces_sample_rate", fallback=1.0
         )
-        assert (
-            0 <= self.TracesSampleRate <= 1.0
-        ), "Traces sample rate must be between 0 and 1."
+        assert 0 <= self.TracesSampleRate <= 1.0, (
+            "Traces sample rate must be between 0 and 1."
+        )
 
         # INITIALIZATION
         sentry_sdk.init(
@@ -160,9 +160,9 @@ class SentryService(Service):
         Examples:
         ```python
         try:
-                call_collapsing_function()
+            call_collapsing_function()
         except Exception as e:
-                sentry_svc.capture_exception(e)
+            sentry_svc.capture_exception(e)
         ```
         """
         return sentry_sdk.capture_exception(error=error, scope=scope, **scope_args)
@@ -244,7 +244,7 @@ class SentryService(Service):
         Examples:
         ```python
         with sentry_svc.transaction("speed test", "test sleeping"):
-                time.sleep(1.0)
+            time.sleep(1.0)
         ```
         """
         return sentry_sdk.start_transaction(op=span_operation, name=span_name)
@@ -265,13 +265,13 @@ class SentryService(Service):
         Examples:
         ```python
         with sentry_svc.transaction("speed test", "multiple tasks"):
-                prepare_task1()
-                with sentry_svc.span("task", "task1"):
-                        task1()
-                prepare_task2()
-                with sentry_svc.span("task", "task2"):
-                        task2()
-                finalize()
+            prepare_task1()
+            with sentry_svc.span("task", "task1"):
+                task1()
+            prepare_task2()
+            with sentry_svc.span("task", "task2"):
+                task2()
+            finalize()
         ```
         """
         return sentry_sdk.start_span(op=operation, description=description)

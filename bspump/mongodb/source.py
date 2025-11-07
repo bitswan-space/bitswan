@@ -1,4 +1,4 @@
-""" Module for connecting to Mongo database"""
+"""Module for connecting to Mongo database"""
 
 import asyncio
 import logging

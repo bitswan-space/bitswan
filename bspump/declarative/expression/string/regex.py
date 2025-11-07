@@ -73,7 +73,7 @@ class REGEX_PARSE(Expression):
         arg_miss=None,
         arg_set=None,
         arg_unset=None,
-        arg_update=None
+        arg_update=None,
     ):
         super().__init__(app)
 

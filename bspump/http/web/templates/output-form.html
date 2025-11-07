@@ -1,23 +1,76 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/styles/tailwind.css">
+    <style>
+        html {
+            height: auto;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e8f0f5 100%);
+        }
+        body {
+            height: auto;
+            min-height: 100vh;
+            width: 100%;
+            display: block;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        }
+        #main-form {
+            display: block;
+            width: 100%;
+            max-width: 64rem;
+            margin: 0 auto;
+            background: white;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            border-radius: 12px;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        .results-container {
+            padding: 2.5rem;
+        }
+        .results-header {
+            border-bottom: 2px solid #e5e7eb;
+            padding-bottom: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        .loading-overlay {
+            backdrop-filter: blur(4px);
+        }
+        .loading-spinner {
+            border: 3px solid #f3f4f6;
+            border-top: 3px solid #3b82f6;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
 </head>
-<body class="min-h-screen bg-gradient-to-b from-cyan-50 to-cyan-100 bg-cyan-200 flex justify-center items-center py-10 px-4 sm:px-6 lg:px-8">
-    <form id="main-form" method="post" class="w-full max-w-3xl bg-neutral-50 shadow-xl rounded-lg p-8 border border-cyan-00">
+<body class="py-10 px-4 sm:px-6 lg:px-8">
+    <form id="main-form" method="post">
 
         <!-- Loading Overlay -->
         <div id="loading" style="display:none">
-            <div class="fixed top-0 left-0 h-screen w-screen bg-black bg-opacity-50 z-50 flex justify-center items-center">
-                <div class="bg-white p-4 rounded-lg">
-                    <div class="text-center">Processing...</div>
+            <div class="fixed top-0 left-0 h-screen w-screen bg-black bg-opacity-50 z-50 flex justify-center items-center loading-overlay">
+                <div class="bg-white p-8 rounded-xl shadow-2xl max-w-sm w-full mx-4">
+                    <div class="loading-spinner"></div>
+                    <div class="text-center text-gray-700 font-semibold text-lg">Processing...</div>
                 </div>
             </div>
         </div>
 
-        <div class="space-y-8">
-            <div class="max-w-8xl mx-auto pt-5 pb-12 px-4 sm:px-6 lg:pb-16 lg:px-8 bg-gray sm:rounded-lg">
-                <h1 class="text-3xl font-bold text-gray-800 mb-6 pb-4">Results</h1>
+        <div class="results-container">
+            <div class="results-header">
+                <h1 class="text-3xl font-bold text-gray-900 tracking-tight">Results</h1>
+            </div>
+            <div class="results-content">
                 {{ fields }}
             </div>
         </div>

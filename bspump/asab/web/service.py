@@ -21,12 +21,13 @@ class WebService(Service):
 
     ```python
     from asab.web import Module
+
     self.add_module(Module)
     web_service = self.get_service("asab.WebService")
     container = asab.web.WebContainer(
-            websvc=web_service,
-            config_section_name='my:web',
-            config={"listen": "0.0.0.0:8080"}
+        websvc=web_service,
+        config_section_name="my:web",
+        config={"listen": "0.0.0.0:8080"},
     )
     ```
     """

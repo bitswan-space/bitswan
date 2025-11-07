@@ -31,11 +31,11 @@ class PubSub(object):
 
         ```python
         class MyClass:
-                def __init__(self, app):
-                        app.PubSub.subscribe("Application.tick!", self.on_tick)
+            def __init__(self, app):
+                app.PubSub.subscribe("Application.tick!", self.on_tick)
 
-                def on_tick(self, message_type):
-                        print(message_type)
+            def on_tick(self, message_type):
+                print(message_type)
         ```
         """
 
@@ -59,16 +59,16 @@ class PubSub(object):
 
         ```python
         class MyClass:
-                def __init__(self, app):
-                        app.PubSub.subscribe_all(self)
+            def __init__(self, app):
+                app.PubSub.subscribe_all(self)
 
-                @asab.subscribe("Application.tick!")
-                async def on_tick(self, message_type):
-                        print(message_type)
+            @asab.subscribe("Application.tick!")
+            async def on_tick(self, message_type):
+                print(message_type)
 
-                @asab.subscribe("Application.exit!")
-                def on_exit(self, message_type):
-                        print(message_type)
+            @asab.subscribe("Application.exit!")
+            def on_exit(self, message_type):
+                print(message_type)
         ```
         """
         for member_name in dir(obj):
@@ -90,12 +90,12 @@ class PubSub(object):
 
         ```python
         class MyClass:
-                def __init__(self, app):
-                        app.PubSub.subscribe("Application.tick!", self.only_once)
+            def __init__(self, app):
+                app.PubSub.subscribe("Application.tick!", self.only_once)
 
-                def only_once(self, message_type):
-                        print("This message is displayed only once!")
-                        app.PubSub.unsubscribe("Application.tick!", self.only_once)
+            def only_once(self, message_type):
+                print("This message is displayed only once!")
+                app.PubSub.unsubscribe("Application.tick!", self.only_once)
         ```
         """
         callback_list = self.Subscribers.get(message_type)
@@ -174,18 +174,18 @@ class PubSub(object):
 
         ```python
         class MyApplication(asab.Application):
-                async def initialize(self):
-                        self.Count = 0
-                        self.PubSub.subscribe("Fireworks.started!", self.on_fireworks)
+            async def initialize(self):
+                self.Count = 0
+                self.PubSub.subscribe("Fireworks.started!", self.on_fireworks)
 
-                async def main(self):
-                        for i in range(3):
-                                self.Count += 1
-                                self.PubSub.publish("Fireworks.started!", self.Count)
-                                await asyncio.sleep(1)
+            async def main(self):
+                for i in range(3):
+                    self.Count += 1
+                    self.PubSub.publish("Fireworks.started!", self.Count)
+                    await asyncio.sleep(1)
 
-                def on_fireworks(self, message_type, count):
-                        print("boom " * count)
+            def on_fireworks(self, message_type, count):
+                print("boom " * count)
         ```
         """
 
@@ -245,16 +245,16 @@ class subscribe(object):
     Examples:
     ```python
     class MyClass(object):
-            def __init__(self, app):
-                    app.PubSub.subscribe_all(self)
+        def __init__(self, app):
+            app.PubSub.subscribe_all(self)
 
-            @asab.subscribe("Application.tick!")
-            async def on_tick(self, message_type):
-                    print(message_type)
+        @asab.subscribe("Application.tick!")
+        async def on_tick(self, message_type):
+            print(message_type)
 
-            @asab.subscribe("Application.exit!")
-            def on_exit(self, message_type):
-                    print(message_type)
+        @asab.subscribe("Application.exit!")
+        def on_exit(self, message_type):
+            print(message_type)
     ```
     """
 
@@ -296,16 +296,14 @@ class Subscriber(object):
 
     ```python
     async def my_coroutine(self):
-            # Subscribe for two application events
-            subscriber = asab.Subscriber(
-                    self.PubSub,
-                    "Application.tick!",
-                    "Application.exit!"
-            )
-            async for message_type, args, kwargs in subscriber:
-                    if message_type == "Application.exit!":
-                            break;
-                    print("Tick.")
+        # Subscribe for two application events
+        subscriber = asab.Subscriber(
+            self.PubSub, "Application.tick!", "Application.exit!"
+        )
+        async for message_type, args, kwargs in subscriber:
+            if message_type == "Application.exit!":
+                break
+            print("Tick.")
     ```
     """
 
@@ -335,17 +333,15 @@ class Subscriber(object):
 
         ```python
         async def my_coroutine(app):
-                # Subscribe for a two application events
-                subscriber = asab.Subscriber(
-                        app.PubSub,
-                        "Application.tick!",
-                        "Application.exit!"
-                )
-                while True:
-                        message_type, args, kwargs = await subscriber.message()
-                        if message_type == "Application.exit!":
-                                break
-                        print("Tick.")
+            # Subscribe for a two application events
+            subscriber = asab.Subscriber(
+                app.PubSub, "Application.tick!", "Application.exit!"
+            )
+            while True:
+                message_type, args, kwargs = await subscriber.message()
+                if message_type == "Application.exit!":
+                    break
+                print("Tick.")
         ```
         """
         return self._q.get()

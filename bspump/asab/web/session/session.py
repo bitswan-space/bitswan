@@ -4,7 +4,6 @@ import collections
 
 
 class Session(collections.MutableMapping):
-
     """Session dict-like object."""
 
     def __init__(self, storage, id, new, max_age=None):
