@@ -111,14 +111,14 @@ class PromptFormField(PromptFormBaseField):
         # Set default CSS classes based on field state
         self.default_classes = kwargs.get(
             "default_css_classes",
-            "text-primary border border-secondary text-sm px-4 py-1 rounded-md font-mono w-full max-w-[150px] mx-2",
+            "text-primary dark:text-primary-dark border border-secondary/50 focus:border-secondary focus:dark:border-secondary-dark focus:ring-2 focus:ring-secondary/20 focus:dark:ring-secondary-dark/20 focus:outline-none text-sm px-4 py-2 rounded-lg font-mono w-full max-w-[150px] mx-2 bg-neutral/30 dark:bg-neutral-dark/20 transition-all duration-200",
         )
 
         # Apply disabled styling for readonly fields
         if self.readonly:
             self.default_classes = kwargs.get(
                 "default_css_classes",
-                "text-primary border border-secondary text-sm px-4 py-1 rounded-md font-mono w-full max-w-[150px] mx-2 opacity-50 cursor-not-allowed",
+                "text-primary dark:text-primary-dark border border-secondary/50 text-sm px-4 py-2 rounded-lg font-mono w-full max-w-[150px] mx-2 opacity-50 cursor-not-allowed bg-neutral/30 dark:bg-neutral-dark/20",
             )
 
     @property
