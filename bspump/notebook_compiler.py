@@ -96,7 +96,25 @@ class NotebookCompiler:
                     return
                 parsed_ast = ast.parse(clean_code)
 
-                # Check if the cell contains create_webchat_flow
+                # Check if auto_pipeline hasn't been added and if we are in the cells that initialized webchat
+                if not self._in_autopipeline and self._webchat_detected and contains_function_call(parsed_ast, "run_flow"):
+                    self._in_autopipeline = True
+                    pipeline_setup = """from bspump.http_webchat.server import *
+from bspump.http_webchat.webchat import *
+from bspump.jupyter import *
+
+# Auto-generated pipeline setup for webchat
+auto_pipeline(
+    source=lambda app, pipeline: WebChatSource(app, pipeline),
+    sink=lambda app, pipeline: WebchatSink(app, pipeline),
+    name="WebChatPipeline"
+)
+
+"""
+                    fout.write(pipeline_setup)
+                    self._in_webchat_context = True
+
+                # Check if the cell contains create_webchat_flow - so it initialize new webchat flow
                 if contains_function_call(parsed_ast, "create_webchat_flow"):
                     self._webchat_detected = True
 
@@ -126,7 +144,8 @@ class NotebookCompiler:
                                             ] = f"@create_webchat_flow('{flow_name}')\nasync def {flow_name}({variable_name}):\n"
                                             return
 
-                if self._current_flow_name is not None:
+                # Check if we are still in webchat_flow code
+                if self._current_flow_name:
                     cleaned_lines = [
                         line
                         for line in clean_code.split("\n")
@@ -146,12 +165,13 @@ class NotebookCompiler:
                     self._cell_processor_contents[self._cell_number] = (
                         "\n".join(indent_code(clean_code.split("\n"))) + "\n\n"
                     )
+
+                # Mark that we are in auto_pipeline - the following code will be added to async_step
                 if not self._in_autopipeline and contains_function_call(
                     parsed_ast, "auto_pipeline"
                 ):
                     self._in_autopipeline = True
-                    if "WebChatSource":
-                        self._in_webchat_context = True
+
         elif (
             cell["cell_type"] == "markdown"
             and self._webchat_detected
@@ -184,24 +204,10 @@ class NotebookCompiler:
         self._cell_processor_contents = {}
         self._current_flow_name = None
         self._current_chat_name = None
-        self._auto_pipeline_added = False
         self._webchat_detected = detect_webchat(ntb)
 
         with open(out_path, "w") as f:
-            if self._webchat_detected:
-                # Automatically add auto-pipeline
-                if not self._auto_pipeline_added:
-                    pipeline_setup = """from bspump.http_webchat.server import *\nfrom bspump.http_webchat.webchat import *\nfrom bspump.jupyter import *\n\n# Auto-generated pipeline setup for webchat
-auto_pipeline(
-    source=lambda app, pipeline: WebChatSource(app, pipeline),
-    sink=lambda app, pipeline: WebchatSink(app, pipeline),
-    name="WebChatPipeline"
-)
-"""
-                    f.write(pipeline_setup)
-                    self._auto_pipeline_added = True
-                    self._in_autopipeline = True
-                    self._in_webchat_context = True
+
             for cell in ntb["cells"]:
                 self._cell_number += 1
                 self.parse_cell(cell, f)
