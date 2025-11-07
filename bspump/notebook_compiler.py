@@ -15,23 +15,39 @@ def contains_function_call(ast_tree, function_name):
     return False
 
 
-def indent_code(lines: list[str]) -> list[str]:
-    multiline_quote_string = None
-    indent_lines = []
-    lines_out = []
-    for i, line in enumerate(lines):
-        if not multiline_quote_string and line.strip(" ") != "":
-            indent_lines.append(i)
-        if multiline_quote_string and multiline_quote_string in line:
-            multiline_quote_string = None
-            continue
-        if line.count('"""') % 2 == 1:
-            multiline_quote_string = '"""'
-        if line.count("'''") % 2 == 1:
-            multiline_quote_string = "'''"
-    for i in range(len(lines)):
-        _indent = "    " if i in indent_lines else ""
-        lines_out.append(_indent + lines[i])
+def indent_code(lines: list[str] | str, indent: str = "    ", handle_multiline_quotes: bool = True) -> list[str] | str:
+    is_string = isinstance(lines, str)
+    if is_string:
+        lines = lines.split('\n')
+    
+    if not handle_multiline_quotes:
+        lines_out = []
+        for line in lines:
+            if line.strip():
+                lines_out.append(indent + line)
+            else:
+                lines_out.append(line)
+    else:
+        multiline_quote_string = None
+        indent_lines = []
+        for i, line in enumerate(lines):
+            if not multiline_quote_string and line.strip(" ") != "":
+                indent_lines.append(i)
+            if multiline_quote_string and multiline_quote_string in line:
+                multiline_quote_string = None
+                continue
+            if line.count('"""') % 2 == 1:
+                multiline_quote_string = '"""'
+            if line.count("'''") % 2 == 1:
+                multiline_quote_string = "'''"
+        
+        lines_out = []
+        for i in range(len(lines)):
+            _indent = indent if i in indent_lines else ""
+            lines_out.append(_indent + lines[i])
+    
+    if is_string:
+        return '\n'.join(lines_out)
     return lines_out
 
 
@@ -58,6 +74,50 @@ def detect_webchat(ntb):
 
     return False
 
+def split_cell_on_create_webchat_flow(cell):
+    """Split a notebook cell into multiple smaller cells based on *calls* to `create_webchat_flow()`."""
+    source = "".join(cell["source"])
+    try:
+        parsed = ast.parse(source)
+    except SyntaxError:
+        return [cell]
+
+    create_lines = []
+    for node in ast.walk(parsed):
+        if (
+            isinstance(node, ast.Call)
+            and isinstance(node.func, ast.Name)
+            and node.func.id == "create_webchat_flow"
+        ):
+            create_lines.append(node.lineno)
+
+    if not create_lines:
+        # No actual calls found (e.g., only imported) → keep original
+        return [cell]
+
+    create_lines.sort()
+    lines = source.splitlines(keepends=True)
+    split_cells = []
+
+    # Add code before first call if exists
+    if create_lines[0] > 1:
+        before_lines = lines[: create_lines[0] - 1]
+        if before_lines and any(line.strip() for line in before_lines):
+            c1 = cell.copy()
+            c1["source"] = before_lines
+            split_cells.append(c1)
+
+    # Split for each call section
+    for i, start_lineno in enumerate(create_lines):
+        start = start_lineno - 1
+        end = create_lines[i + 1] - 1 if i + 1 < len(create_lines) else len(lines)
+        chunk = lines[start:end]
+        if chunk and any(line.strip() for line in chunk):
+            c = cell.copy()
+            c["source"] = chunk
+            split_cells.append(c)
+
+    return split_cells
 
 class NotebookCompiler:
     _in_autopipeline = False
@@ -141,8 +201,9 @@ auto_pipeline(
                                             self._current_chat_name = variable_name
                                             self._webchat_flows[
                                                 flow_name
-                                            ] = f"@create_webchat_flow('{flow_name}')\nasync def {flow_name}({variable_name}):\n"
-                                            return
+                                            ] = f"""
+@create_webchat_flow('{flow_name}')\nasync def {flow_name}({variable_name}):\n"""
+
 
                 # Check if we are still in webchat_flow code
                 if self._current_flow_name:
@@ -162,8 +223,9 @@ auto_pipeline(
                 if not self._in_autopipeline:
                     fout.write(clean_code + "\n\n")
                 else:
+                    # Store code without extra indentation - it will be indented when inserted into function body
                     self._cell_processor_contents[self._cell_number] = (
-                        "\n".join(indent_code(clean_code.split("\n"))) + "\n\n"
+                        clean_code + "\n\n"
                     )
 
                 # Mark that we are in auto_pipeline - the following code will be added to async_step
@@ -190,11 +252,13 @@ auto_pipeline(
                         extensions=["fenced_code", "tables", "codehilite"],
                     )
                     escaped_html = html_content.replace('"', '\\"').replace("'", "\\'")
-                    response_code = f'    await {self._current_chat_name}.tell_user(f"""{escaped_html}""", is_html=True)\n'
+                    response_code = f'await {self._current_chat_name}.tell_user(f"""{escaped_html}""", is_html=True)\n'
 
                     if self._current_flow_name is not None:
-                        self._webchat_flows[self._current_flow_name] += response_code
+                        # For webchat flows, add indentation (function body indentation)
+                        self._webchat_flows[self._current_flow_name] += '    ' + response_code
                     elif self._in_autopipeline and self._in_webchat_context:
+                        # For processor contents, don't indent here - will be indented when inserted
                         self._cell_processor_contents[self._cell_number] = response_code
 
     def compile_notebook(self, ntb, out_path="tmp.py"):
@@ -209,11 +273,23 @@ auto_pipeline(
         with open(out_path, "w") as f:
 
             for cell in ntb["cells"]:
-                self._cell_number += 1
-                self.parse_cell(cell, f)
+                if cell["cell_type"] == "code" and "create_webchat_flow" in "".join(cell["source"]):
+                    split_cells = split_cell_on_create_webchat_flow(cell)
+                    for subcell in split_cells:
+                        self._cell_number += 1
+                        self.parse_cell(subcell, f)
+                else:
+                    self._cell_number += 1
+                    self.parse_cell(cell, f)
+
+
+            all_contents = ''.join(self._cell_processor_contents.values())
+            indented_contents = indent_code(all_contents, indent="    ", handle_multiline_quotes=False)
+            
             step_func_code = f"""@async_step
 async def processor_internal(inject, event):
-{''.join(list(self._cell_processor_contents.values()))}    await inject(event)
+{indented_contents}    await inject(event)
+
 """
             f.write(step_func_code)
             for flow_name, steps in self._webchat_flows.items():
