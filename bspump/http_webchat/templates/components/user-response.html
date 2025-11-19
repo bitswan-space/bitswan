@@ -1,0 +1,10 @@
+<div id="{{ webchat_response }}"
+     class="webchat_response fade-in w-full max-w-[85%] md:max-w-[75%] my-2 md:my-3 px-4 md:px-6 py-4 md:py-5 {% if is_html %}block{% else %}flex items-center{% endif %} text-primary-dark dark:text-primary bg-primary dark:bg-primary-dark rounded-2xl rounded-tr-none ml-auto mr-0 shadow-md">
+    {% if is_html %}
+        <div class="html-content">
+            {{ response_text | safe }}
+        </div>
+    {% else %}
+        <div class="leading-relaxed">{{ response_text }}</div>
+    {% endif %}
+</div>
