@@ -1,0 +1,8 @@
+name = "MemeGenerator"
+short_description = """
+Demonstrates building a custom automation image via the local image/ directory, installing Pillow to render captioned memes. Use it as a reference for extending the base runtime with extra Python packages.
+"""
+icon = """
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#facc15" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 15l4-4 3 3 4-4 7 7"/><circle cx="8.5" cy="7.5" r="1.5"/></svg>
+"""
+
