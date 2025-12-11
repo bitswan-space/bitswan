@@ -1,5 +1,7 @@
 <div class="p-2 border border-gray-100 shadow-md rounded mt-4 mb-2">
+    {% if key %}
     <h2 class="font-semibold text-lg">{{ key }}</h2>
+    {% endif %}
     <div class="ml-4">
         {{ content | safe }}
     </div>

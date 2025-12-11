@@ -6,7 +6,7 @@ in pkgs.mkShell {
         python313Packages.setuptools
         python313Packages.pip
         python313Packages.virtualenv
-        python313Packages.wheel
+        python313Packages.numpy
         ruff
     ];
 

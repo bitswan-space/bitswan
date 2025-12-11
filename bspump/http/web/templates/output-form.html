@@ -73,7 +73,39 @@
             <div class="results-content">
                 {{ fields }}
             </div>
+            <div class="mt-4 text-right">
+                <button 
+                    id="copy-json-btn" 
+                    type="button"
+                    class="text-gray-400 hover:text-gray-600 font-mono text-xs cursor-pointer bg-transparent border-none p-0"
+                    title="Copy JSON"
+                    onclick="copyJsonToClipboard()"
+                >
+                    {}
+                </button>
+            </div>
         </div>
+        <script>
+            const responseJsonData = {{ json_data | tojson }};
+            function copyJsonToClipboard() {
+                const jsonString = JSON.stringify(responseJsonData, null, 2);
+                navigator.clipboard.writeText(jsonString).then(() => {
+                    const btn = document.getElementById('copy-json-btn');
+                    const originalText = btn.textContent;
+                    btn.textContent = '✓';
+                    btn.classList.remove('text-gray-400', 'hover:text-gray-600');
+                    btn.classList.add('text-green-500');
+                    setTimeout(() => {
+                        btn.textContent = originalText;
+                        btn.classList.remove('text-green-500');
+                        btn.classList.add('text-gray-400', 'hover:text-gray-600');
+                    }, 1000);
+                }).catch(err => {
+                    console.error('Failed to copy JSON:', err);
+                    alert('Failed to copy JSON to clipboard');
+                });
+            }
+        </script>
     </form>
 </body>
 </html>
