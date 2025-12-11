@@ -1,0 +1,9 @@
+{% if is_html %}
+    <div class="welcome-message-box html-content text-base md:text-lg leading-relaxed">
+        {{ welcome_text | safe }}
+    </div>
+{% else %}
+    <div class="welcome-message-box text-base md:text-lg leading-relaxed">
+        {{ welcome_text }}
+    </div>
+{% endif %}
