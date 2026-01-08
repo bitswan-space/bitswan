@@ -542,7 +542,10 @@ class JSONWebSink(Sink):
     def render_html_output(self, json_data):
         template = env.get_template("output-form.html")
         fields_html = self.format_json_to_html(json_data)
-        return template.render(fields=fields_html)
+        json_string = json.dumps(json_data, indent=2)
+        return template.render(
+            fields=fields_html, json_data=json_data, json_data_string=json_string
+        )
 
     def format_json_to_html(self, json_data):
         fields_html = []
@@ -551,17 +554,26 @@ class JSONWebSink(Sink):
             for button in json_data.buttons:
                 fields_html.append(button.html())
 
-        for key, value in json_data.items():
-            if isinstance(value, dict):
-                nested_html = self.format_json_to_html(value)
-                template = env.get_template("nested-json.html")
-                fields_html.append(template.render(key=key, content=nested_html))
-            elif isinstance(value, list):
-                nested_html = self.format_list(key, value)
-                template = env.get_template("list.html")
-                fields_html.append(template.render(key=key, content=nested_html))
-            else:
-                fields_html.append(self.format_key_value(key, value))
+        # Handle top-level list
+        if isinstance(json_data, list):
+            nested_html = self.format_list(None, json_data)
+            template = env.get_template("list.html")
+            fields_html.append(template.render(key="", content=nested_html))
+            return "".join(fields_html)
+
+        # Handle dict
+        if isinstance(json_data, dict):
+            for key, value in json_data.items():
+                if isinstance(value, dict):
+                    nested_html = self.format_json_to_html(value)
+                    template = env.get_template("nested-json.html")
+                    fields_html.append(template.render(key=key, content=nested_html))
+                elif isinstance(value, list):
+                    nested_html = self.format_list(key, value)
+                    template = env.get_template("list.html")
+                    fields_html.append(template.render(key=key, content=nested_html))
+                else:
+                    fields_html.append(self.format_key_value(key, value))
 
         return "".join(fields_html)
 
@@ -570,15 +582,31 @@ class JSONWebSink(Sink):
 
         for item in json_data_lst:
             if isinstance(item, list):
-                list_items_html.append(self.format_list(key, item))
+                list_items_html.append(self.format_list(None, item))
             elif isinstance(item, dict):
-                list_items_html.append(self.format_json_to_html(item))
+                nested_html = self.format_json_to_html(item)
+                template = env.get_template("nested-json.html")
+                list_items_html.append(template.render(key="", content=nested_html))
             else:
-                list_items_html.append(self.format_key_value(key, item))
+                list_items_html.append(self.format_key_value("", item))
 
         return "".join(list_items_html)
 
     def format_key_value(self, key, value):
+        if not key:
+            # For list items without keys, render just the value without label
+            if isinstance(value, bool):
+                fd = CheckboxField("", readonly=True, default=value)
+            elif isinstance(value, int):
+                fd = IntField("", readonly=True, default=value)
+            elif isinstance(value, float):
+                fd = FloatField("", readonly=True, default=value)
+            else:
+                fd = TextField("", readonly=True, default=value)
+            # Render without label wrapper
+            inner = fd.inner_html(fd.default, fd.readonly)
+            return f'<div class="flex justify-center mt-4"><div class="sm:col-span-4 w-full max-w-xl">{inner}</div></div>'
+
         if isinstance(value, bool):
             fd = CheckboxField(key, readonly=True, default=value)
         elif isinstance(value, int):
