@@ -1,22 +1,32 @@
 #!/bin/sh
 set -e
 
-ln -s /deps/node_modules /app/node_modules
-ln -s /deps/package.json /app/package.json
+ln -sf /deps/node_modules /app/node_modules
+ln -sf /deps/package.json /app/package.json
 
+# Config content for frontend
+CONFIG_CONTENT="window.__BITSWAN_CONFIG__ = {
+  workspaceName: \"${BITSWAN_WORKSPACE_NAME}\",
+  deploymentId: \"${BITSWAN_DEPLOYMENT_ID}\",
+  stage: \"${BITSWAN_AUTOMATION_STAGE}\",
+  domain: \"${BITSWAN_GITOPS_DOMAIN}\"
+};"
+
+# Live dev mode: run Vite dev server with hot reload
+if [ "$BITSWAN_AUTOMATION_STAGE" = "live-dev" ]; then
+  echo "Starting in live-dev mode with hot reload..."
+
+  # Write config to public directory for Vite dev server
+  echo "$CONFIG_CONTENT" > /app/public/config.js
+
+  # Run Vite dev server (listens on 0.0.0.0:8080)
+  exec npm run dev -- --host 0.0.0.0 --port 8080
+fi
+
+# Production mode: build and serve static files
 npm run build
 
-# Pass URL components to the frontend
-# URL format: https://{workspace}-{deployment_id}.{domain}
-# The frontend derives backend URL by replacing "frontend" with "backend" in deployment ID
-
-cat > dist/config.js << EOF
-window.__BITSWAN_CONFIG__ = {
-  workspaceName: "${BITSWAN_WORKSPACE_NAME}",
-  deploymentId: "${BITSWAN_DEPLOYMENT_ID}",
-  stage: "${BITSWAN_AUTOMATION_STAGE}",
-  domain: "${BITSWAN_GITOPS_DOMAIN}"
-};
-EOF
+# Write config to dist directory for production
+echo "$CONFIG_CONTENT" > dist/config.js
 
 exec serve -s dist -l 8080
