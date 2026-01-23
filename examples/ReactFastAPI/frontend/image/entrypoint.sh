@@ -16,6 +16,9 @@ CONFIG_CONTENT="window.__BITSWAN_CONFIG__ = {
 if [ "$BITSWAN_AUTOMATION_STAGE" = "live-dev" ]; then
   echo "Starting in live-dev mode with hot reload..."
 
+  # Ensure public directory exists (may not exist if source is mounted directly)
+  mkdir -p /app/public
+
   # Write config to public directory for Vite dev server
   echo "$CONFIG_CONTENT" > /app/public/config.js
 
