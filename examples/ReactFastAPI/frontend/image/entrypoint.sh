@@ -6,19 +6,16 @@ ln -s /deps/package.json /app/package.json
 
 npm run build
 
-# Generate runtime config with URL components
-# Backend deployment ID is derived by replacing 'frontend' with 'backend'
-BACKEND_DEPLOYMENT_ID=$(echo "$BITSWAN_DEPLOYMENT_ID" | sed 's/frontend/backend/')
-BACKEND_URL="${BITSWAN_URL_PREFIX}${BACKEND_DEPLOYMENT_ID}${BITSWAN_URL_SUFFIX}"
+# Pass URL components to the frontend
+# URL format: https://{workspace}-{deployment_id}.{domain}
+# The frontend derives backend URL by replacing "frontend" with "backend" in deployment ID
 
 cat > dist/config.js << EOF
 window.__BITSWAN_CONFIG__ = {
-  backendUrl: "${BACKEND_URL}",
-  automationUrl: "${BITSWAN_AUTOMATION_URL}",
+  workspaceName: "${BITSWAN_WORKSPACE_NAME}",
   deploymentId: "${BITSWAN_DEPLOYMENT_ID}",
   stage: "${BITSWAN_AUTOMATION_STAGE}",
-  urlPrefix: "${BITSWAN_URL_PREFIX}",
-  urlSuffix: "${BITSWAN_URL_SUFFIX}"
+  domain: "${BITSWAN_GITOPS_DOMAIN}"
 };
 EOF
 
