@@ -1,0 +1,3 @@
+[deployment]
+port = 8000
+expose = true
