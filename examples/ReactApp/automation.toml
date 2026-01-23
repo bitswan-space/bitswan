@@ -1,0 +1,3 @@
+[deployment]
+port = 8080
+expose = true
