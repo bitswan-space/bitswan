@@ -5,6 +5,6 @@ export default defineConfig({
   plugins: [react()],
   server: {
     // Allow all hosts for live-dev mode (accessed via reverse proxy)
-    allowedHosts: 'all',
+    allowedHosts: ['.bitswan.ai'],
   },
 })
