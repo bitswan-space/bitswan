@@ -1,23 +1,32 @@
 import { useState, useEffect } from 'react'
 import './App.css'
 
-// Get backend URL from runtime config (set by entrypoint.sh)
+// Helper to construct automation URLs using the config components
+const getAutomationUrl = (deploymentId) => {
+  const config = window.__BITSWAN_CONFIG__
+  if (config?.urlPrefix && config?.urlSuffix) {
+    return `${config.urlPrefix}${deploymentId}${config.urlSuffix}`
+  }
+  return null
+}
+
+// Get backend URL from runtime config
 const getBackendUrl = () => {
   const config = window.__BITSWAN_CONFIG__
   console.log('BitSwan config:', config)
 
+  // Use pre-computed backend URL from config
   if (config?.backendUrl) {
     return config.backendUrl
   }
 
-  // Fallback: try to derive from current URL by replacing '-frontend' with '-backend'
+  // Fallback: try to derive from current URL
   const currentUrl = window.location.origin
   if (currentUrl.includes('-frontend')) {
     return currentUrl.replace(/-frontend/g, '-backend')
   }
 
-  // Last resort for local development
-  return 'http://localhost:8000'
+  return null
 }
 
 function App() {
@@ -26,11 +35,12 @@ function App() {
   const [backendUrl] = useState(getBackendUrl)
 
   useEffect(() => {
-    console.log('Fetching from:', backendUrl)
-
-    if (!backendUrl || backendUrl === 'http://localhost:8000') {
-      setMessage(`Config not loaded. Trying: ${backendUrl}`)
+    if (!backendUrl) {
+      setMessage('Backend URL not configured')
+      return
     }
+
+    console.log('Fetching from:', backendUrl)
 
     fetch(`${backendUrl}/`)
       .then(res => {
@@ -40,11 +50,12 @@ function App() {
       .then(data => setMessage(data.message))
       .catch(err => {
         console.error('Backend fetch error:', err)
-        setMessage(`Failed to connect to ${backendUrl}: ${err.message}`)
+        setMessage(`Failed: ${err.message}`)
       })
   }, [backendUrl])
 
   const incrementCount = async () => {
+    if (!backendUrl) return
     try {
       const res = await fetch(`${backendUrl}/count`, { method: 'POST' })
       const data = await res.json()
