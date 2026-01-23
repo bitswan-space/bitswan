@@ -2,39 +2,62 @@
 
 const getConfig = () => window.__BITSWAN_CONFIG__ || {}
 
+// Get the base deployment ID (without stage suffix)
+// e.g., "myapp-frontend-dev" with stage "dev" -> "myapp-frontend"
+const getBaseDeploymentId = () => {
+  const config = getConfig()
+  if (!config.deploymentId) {
+    return null
+  }
+
+  let baseId = config.deploymentId
+
+  // Strip stage suffix if present (deployment ID might include it)
+  if (config.stage && baseId.endsWith(`-${config.stage}`)) {
+    baseId = baseId.slice(0, -(config.stage.length + 1))
+  }
+
+  return baseId
+}
+
 // Build URL for a deployment from components
-// URL format: https://{workspace}-{deployment_id}.{domain}
-const buildUrl = (deploymentId) => {
+// URL format: https://{workspace}-{deployment_id}-{stage}.{domain} (dev/staging)
+// URL format: https://{workspace}-{deployment_id}.{domain} (production)
+const buildUrl = (baseDeploymentId) => {
   const config = getConfig()
   if (!config.workspaceName || !config.domain) {
     return null
   }
-  return `https://${config.workspaceName}-${deploymentId}.${config.domain}`
+
+  // Stage is appended to deployment ID (dev/staging), or omitted (production)
+  const fullDeploymentId = config.stage
+    ? `${baseDeploymentId}-${config.stage}`
+    : baseDeploymentId
+
+  return `https://${config.workspaceName}-${fullDeploymentId}.${config.domain}`
 }
 
-// Get URL for any automation in this group by replacing our suffix
-// e.g., if we are "myapp-frontend-dev", getAutomationUrl("backend") returns URL for "myapp-backend-dev"
+// Get URL for any automation by replacing our suffix (e.g., "frontend" -> "backend")
 export const getAutomationUrl = (automationSuffix) => {
-  const config = getConfig()
-  if (!config.deploymentId) {
+  const baseId = getBaseDeploymentId()
+  if (!baseId) {
     return null
   }
 
-  // Replace "frontend" with the requested suffix in our deployment ID
-  const targetDeploymentId = config.deploymentId.replace('-frontend', `-${automationSuffix}`)
+  // Replace "frontend" with the requested suffix
+  const targetDeploymentId = baseId.replace('-frontend', `-${automationSuffix}`)
   return buildUrl(targetDeploymentId)
 }
 
-// Get the backend URL by replacing "frontend" with "backend" in our deployment ID
+// Get the backend URL by replacing "frontend" with "backend"
 export const getBackendUrl = () => {
-  const config = getConfig()
-  if (!config.deploymentId) {
+  const baseId = getBaseDeploymentId()
+  if (!baseId) {
     return null
   }
 
-  // Our deployment ID is like "myapp-frontend-dev"
-  // Replace "frontend" with "backend" to get "myapp-backend-dev"
-  const backendDeploymentId = config.deploymentId.replace('-frontend', '-backend')
+  // e.g., "myapp-frontend" -> "myapp-backend"
+  const backendDeploymentId = baseId.replace('-frontend', '-backend')
   return buildUrl(backendDeploymentId)
 }
 
