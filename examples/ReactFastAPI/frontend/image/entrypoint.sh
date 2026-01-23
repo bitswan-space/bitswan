@@ -8,7 +8,7 @@ npm run build
 
 # Generate runtime config with backend URL
 # Backend URL is derived by replacing 'frontend' with 'backend' in our automation URL
-BACKEND_URL=$(echo "$BITSWAN_AUTOMATION_URL" | sed 's/-frontend\./-backend./')
+BACKEND_URL=$(echo "$BITSWAN_AUTOMATION_URL" | sed 's/-frontend/-backend/')
 
 cat > dist/config.js << EOF
 window.__BITSWAN_CONFIG__ = {

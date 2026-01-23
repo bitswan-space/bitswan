@@ -1,25 +1,47 @@
 import { useState, useEffect } from 'react'
 import './App.css'
 
-// Get backend URL from runtime config (set by entrypoint.sh) or use relative path for local dev
+// Get backend URL from runtime config (set by entrypoint.sh)
 const getBackendUrl = () => {
-  if (window.__BITSWAN_CONFIG__?.backendUrl) {
-    return window.__BITSWAN_CONFIG__.backendUrl
+  const config = window.__BITSWAN_CONFIG__
+  console.log('BitSwan config:', config)
+
+  if (config?.backendUrl) {
+    return config.backendUrl
   }
-  // Fallback for local development - assume backend is on port 8000
+
+  // Fallback: try to derive from current URL by replacing '-frontend' with '-backend'
+  const currentUrl = window.location.origin
+  if (currentUrl.includes('-frontend')) {
+    return currentUrl.replace(/-frontend/g, '-backend')
+  }
+
+  // Last resort for local development
   return 'http://localhost:8000'
 }
 
 function App() {
   const [message, setMessage] = useState('Loading...')
   const [count, setCount] = useState(0)
-  const backendUrl = getBackendUrl()
+  const [backendUrl] = useState(getBackendUrl)
 
   useEffect(() => {
+    console.log('Fetching from:', backendUrl)
+
+    if (!backendUrl || backendUrl === 'http://localhost:8000') {
+      setMessage(`Config not loaded. Trying: ${backendUrl}`)
+    }
+
     fetch(`${backendUrl}/`)
-      .then(res => res.json())
+      .then(res => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}`)
+        return res.json()
+      })
       .then(data => setMessage(data.message))
-      .catch(() => setMessage('Failed to connect to backend'))
+      .catch(err => {
+        console.error('Backend fetch error:', err)
+        setMessage(`Failed to connect to ${backendUrl}: ${err.message}`)
+      })
   }, [backendUrl])
 
   const incrementCount = async () => {
@@ -27,8 +49,8 @@ function App() {
       const res = await fetch(`${backendUrl}/count`, { method: 'POST' })
       const data = await res.json()
       setCount(data.count)
-    } catch {
-      console.error('Failed to increment count')
+    } catch (err) {
+      console.error('Failed to increment count:', err)
     }
   }
 
