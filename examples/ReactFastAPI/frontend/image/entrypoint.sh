@@ -22,8 +22,21 @@ if [ "$BITSWAN_AUTOMATION_STAGE" = "live-dev" ]; then
   # Write config to public directory for Vite dev server
   echo "$CONFIG_CONTENT" > /app/public/config.js
 
-  # Run Vite dev server (listens on 0.0.0.0:8080)
-  exec npm run dev -- --host 0.0.0.0 --port 8080
+  # Create vite config that allows hosts from the domain env var
+  cat > /app/vite.config.live-dev.js << EOF
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+
+export default defineConfig({
+  plugins: [react()],
+  server: {
+    allowedHosts: ['.${BITSWAN_GITOPS_DOMAIN}'],
+  },
+})
+EOF
+
+  # Run Vite dev server with live-dev config
+  exec npm run dev -- --config vite.config.live-dev.js --host 0.0.0.0 --port 8080
 fi
 
 # Production mode: build and serve static files
