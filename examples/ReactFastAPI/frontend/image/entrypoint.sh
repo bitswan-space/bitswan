@@ -6,16 +6,19 @@ ln -s /deps/package.json /app/package.json
 
 npm run build
 
-# Generate runtime config with backend URL
-# Backend URL is derived by replacing 'frontend' with 'backend' in our automation URL
-BACKEND_URL=$(echo "$BITSWAN_AUTOMATION_URL" | sed 's/-frontend/-backend/')
+# Generate runtime config with URL components
+# Backend deployment ID is derived by replacing 'frontend' with 'backend'
+BACKEND_DEPLOYMENT_ID=$(echo "$BITSWAN_DEPLOYMENT_ID" | sed 's/frontend/backend/')
+BACKEND_URL="${BITSWAN_URL_PREFIX}${BACKEND_DEPLOYMENT_ID}${BITSWAN_URL_SUFFIX}"
 
 cat > dist/config.js << EOF
 window.__BITSWAN_CONFIG__ = {
   backendUrl: "${BACKEND_URL}",
   automationUrl: "${BITSWAN_AUTOMATION_URL}",
+  deploymentId: "${BITSWAN_DEPLOYMENT_ID}",
   stage: "${BITSWAN_AUTOMATION_STAGE}",
-  deploymentId: "${BITSWAN_DEPLOYMENT_ID}"
+  urlPrefix: "${BITSWAN_URL_PREFIX}",
+  urlSuffix: "${BITSWAN_URL_SUFFIX}"
 };
 EOF
 
