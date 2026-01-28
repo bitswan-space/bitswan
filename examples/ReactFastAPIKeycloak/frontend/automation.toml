@@ -1,0 +1,3 @@
+[deployment]
+expose = true
+auth = true
