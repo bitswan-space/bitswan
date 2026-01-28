@@ -1,10 +1,19 @@
 // BitSwan API client for connecting to backend automations
 
-const getConfig = () => window.__BITSWAN_CONFIG__ || {}
+import { getToken } from './keycloak'
+
+interface BitswanConfig {
+  workspaceName?: string
+  deploymentId?: string
+  stage?: string
+  domain?: string
+}
+
+const getConfig = (): BitswanConfig => window.__BITSWAN_CONFIG__ || {}
 
 // Get the base deployment ID (without stage suffix)
 // e.g., "myapp-frontend-dev" with stage "dev" -> "myapp-frontend"
-const getBaseDeploymentId = () => {
+const getBaseDeploymentId = (): string | null => {
   const config = getConfig()
   if (!config.deploymentId) {
     return null
@@ -23,7 +32,7 @@ const getBaseDeploymentId = () => {
 // Build URL for a deployment from components
 // URL format: https://{workspace}-{deployment_id}-{stage}.{domain} (dev/staging)
 // URL format: https://{workspace}-{deployment_id}.{domain} (production)
-const buildUrl = (baseDeploymentId) => {
+const buildUrl = (baseDeploymentId: string): string | null => {
   const config = getConfig()
   if (!config.workspaceName || !config.domain) {
     return null
@@ -38,7 +47,7 @@ const buildUrl = (baseDeploymentId) => {
 }
 
 // Get URL for any automation by replacing our suffix (e.g., "frontend" -> "backend")
-export const getAutomationUrl = (automationSuffix) => {
+export const getAutomationUrl = (automationSuffix: string): string | null => {
   const baseId = getBaseDeploymentId()
   if (!baseId) {
     return null
@@ -50,7 +59,7 @@ export const getAutomationUrl = (automationSuffix) => {
 }
 
 // Get the backend URL by replacing "frontend" with "backend"
-export const getBackendUrl = () => {
+export const getBackendUrl = (): string | null => {
   const baseId = getBaseDeploymentId()
   if (!baseId) {
     return null
@@ -63,22 +72,31 @@ export const getBackendUrl = () => {
 
 // Backend API client
 class BackendClient {
-  constructor(baseUrl = null) {
+  baseUrl: string | null
+
+  constructor(baseUrl: string | null = null) {
     this.baseUrl = baseUrl || getBackendUrl()
   }
 
-  async request(path, options = {}) {
+  async request<T>(path: string, options: RequestInit = {}): Promise<T> {
     if (!this.baseUrl) {
       throw new Error('Backend URL not configured')
     }
 
     const url = `${this.baseUrl}${path}`
+    const token = getToken()
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+      ...(options.headers as Record<string, string>),
+    }
+
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`
+    }
+
     const response = await fetch(url, {
       ...options,
-      headers: {
-        'Content-Type': 'application/json',
-        ...options.headers,
-      },
+      headers,
     })
 
     if (!response.ok) {
@@ -88,26 +106,26 @@ class BackendClient {
     return response.json()
   }
 
-  get(path) {
-    return this.request(path)
+  get<T>(path: string): Promise<T> {
+    return this.request<T>(path)
   }
 
-  post(path, data) {
-    return this.request(path, {
+  post<T>(path: string, data?: unknown): Promise<T> {
+    return this.request<T>(path, {
       method: 'POST',
       body: data ? JSON.stringify(data) : undefined,
     })
   }
 
-  put(path, data) {
-    return this.request(path, {
+  put<T>(path: string, data: unknown): Promise<T> {
+    return this.request<T>(path, {
       method: 'PUT',
       body: JSON.stringify(data),
     })
   }
 
-  delete(path) {
-    return this.request(path, { method: 'DELETE' })
+  delete<T>(path: string): Promise<T> {
+    return this.request<T>(path, { method: 'DELETE' })
   }
 }
 

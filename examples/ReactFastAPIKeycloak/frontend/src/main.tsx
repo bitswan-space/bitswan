@@ -1,10 +1,10 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-import App from './App.jsx'
-import { initKeycloak } from './keycloak.js'
+import App from './App'
+import { initKeycloak } from './keycloak'
 import './index.css'
 
-const root = createRoot(document.getElementById('root'))
+const root = createRoot(document.getElementById('root')!)
 
 // Show loading state while initializing Keycloak
 root.render(<div className="app"><h1>Loading...</h1></div>)
