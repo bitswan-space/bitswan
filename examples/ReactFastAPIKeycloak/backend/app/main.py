@@ -7,13 +7,36 @@ from app.auth import User, get_current_user
 
 app = FastAPI()
 
-# Get allowed origins from environment variable (comma-separated)
-# Falls back to allowing all origins if not set
-cors_origins_env = os.environ.get("CORS_ALLOWED_ORIGINS", "*")
-if cors_origins_env == "*":
-    cors_origins = ["*"]
-else:
-    cors_origins = [origin.strip() for origin in cors_origins_env.split(",")]
+
+def get_frontend_url() -> str | None:
+    """Build frontend URL from BitSwan environment variables."""
+    workspace = os.environ.get("BITSWAN_WORKSPACE_NAME")
+    deployment_id = os.environ.get("BITSWAN_DEPLOYMENT_ID")
+    stage = os.environ.get("BITSWAN_AUTOMATION_STAGE")
+    domain = os.environ.get("BITSWAN_GITOPS_DOMAIN")
+
+    if not all([workspace, deployment_id, domain]):
+        return None
+
+    # Get base deployment ID (strip stage suffix if present)
+    base_id = deployment_id
+    if stage and base_id.endswith(f"-{stage}"):
+        base_id = base_id[: -(len(stage) + 1)]
+
+    # Replace "backend" with "frontend"
+    frontend_deployment_id = base_id.replace("-backend", "-frontend")
+
+    # Build full deployment ID with stage
+    full_deployment_id = (
+        f"{frontend_deployment_id}-{stage}" if stage else frontend_deployment_id
+    )
+
+    return f"https://{workspace}-{full_deployment_id}.{domain}"
+
+
+# Build CORS origins from environment, fallback to "*"
+frontend_url = get_frontend_url()
+cors_origins = [frontend_url] if frontend_url else ["*"]
 
 app.add_middleware(
     CORSMiddleware,
