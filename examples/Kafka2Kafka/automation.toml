@@ -1,0 +1,5 @@
+[services.kafka]
+enabled = true
+
+[deployment]
+image = "internal/kafka2kafka:shaae485cef1830563553a660fe129dc54eb8cad043"
