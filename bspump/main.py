@@ -123,7 +123,11 @@ class NotebookCompiler:
             self._output_line += 1
 
             # Map processor body lines
-            for cell_num, (indented, cell_id, num_src_lines) in self._cell_processor_contents.items():
+            for cell_num, (
+                indented,
+                cell_id,
+                num_src_lines,
+            ) in self._cell_processor_contents.items():
                 indented_lines = indented.split("\n")
                 src_line_counter = 0
                 for line_text in indented_lines:
@@ -159,12 +163,8 @@ def main():
             with open(app.Notebook) as nb:
                 notebook = json.load(nb)
                 compiled_path = f"{tmpdirname}/autopipeline_tmp.py"
-                line_map = compiler.compile_notebook(
-                    notebook, out_path=compiled_path
-                )
-                bspump.notebook_traceback.install(
-                    app.Notebook, compiled_path, line_map
-                )
+                line_map = compiler.compile_notebook(notebook, out_path=compiled_path)
+                bspump.notebook_traceback.install(app.Notebook, compiled_path, line_map)
                 sys.path.insert(0, tmpdirname)
                 tmp_module = __import__("autopipeline_tmp")  # noqa: F841
         else:
