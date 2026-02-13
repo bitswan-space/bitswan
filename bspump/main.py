@@ -7,6 +7,7 @@ import re
 
 from bspump.jupyter import *  # noqa: F403
 import bspump.jupyter
+import bspump.notebook_traceback
 
 config = None
 __bitswan_dev = False
@@ -29,15 +30,21 @@ def indent_code(lines: list[str]) -> list[str]:
     for i, line in enumerate(lines):
         if not multiline and line.strip(" ") != "":
             indent_lines.append(i)
-        if '"""' in line or "'''" in line:
-            if not multiline:
-                double_quotes = '"""' in line
-            elif (double_quotes and "'''" in line) or (
-                not double_quotes and '"""' in line
-            ):
+        for q in ('"""', "'''"):
+            if q not in line:
                 continue
-            multiline = not multiline
-            continue
+            if not multiline:
+                if line.count(q) % 2 == 1:
+                    double_quotes = q == '"""'
+                    multiline = True
+                break
+            else:
+                matching = (double_quotes and q == '"""') or (
+                    not double_quotes and q == "'''"
+                )
+                if matching and line.count(q) % 2 == 1:
+                    multiline = False
+                break
     for i in range(len(lines)):
         _indent = "    " if i in indent_lines else ""
         lines_out.append(_indent + lines[i])
@@ -47,7 +54,9 @@ def indent_code(lines: list[str]) -> list[str]:
 class NotebookCompiler:
     _in_autopipeline = False
     _cell_number: int = 0
-    _cell_processor_contents: dict[int, str] = {}
+    _cell_processor_contents: dict[int, tuple[str, int, int]] = {}
+    _line_map: dict[int, tuple[int, int]] = {}
+    _output_line: int = 0
 
     def parse_cell(self, cell, fout):
         if cell["cell_type"] == "code":
@@ -74,10 +83,23 @@ class NotebookCompiler:
                 if not clean_code.strip():
                     return
                 if not self._in_autopipeline:
+                    source_lines = clean_code.split("\n")
+                    for src_line_idx, src_line in enumerate(source_lines):
+                        self._output_line += 1
+                        self._line_map[self._output_line] = (
+                            self._cell_number,
+                            src_line_idx + 1,
+                        )
+                    # Account for the two blank lines after
+                    self._output_line += 2
                     fout.write(clean_code + "\n\n")
                 else:
+                    indented = "\n".join(indent_code(clean_code.split("\n"))) + "\n\n"
+                    num_source_lines = len(clean_code.split("\n"))
                     self._cell_processor_contents[self._cell_number] = (
-                        "\n".join(indent_code(clean_code.split("\n"))) + "\n\n"
+                        indented,
+                        self._cell_number,
+                        num_source_lines,
                     )
                 if not self._in_autopipeline and contains_function_call(
                     ast.parse(clean_code), "auto_pipeline"
@@ -88,15 +110,41 @@ class NotebookCompiler:
         self._cell_number = 0
         self._in_autopipeline = False
         self._cell_processor_contents = {}
+        self._line_map = {}
+        self._output_line = 0
         with open(out_path, "w") as f:
             for cell in ntb["cells"]:
                 self._cell_number += 1
                 self.parse_cell(cell, f)
+
+            # @async_step header line
+            self._output_line += 1
+            # async def processor_internal(...) line
+            self._output_line += 1
+
+            # Map processor body lines
+            for cell_num, (indented, cell_id, num_src_lines) in self._cell_processor_contents.items():
+                indented_lines = indented.split("\n")
+                src_line_counter = 0
+                for line_text in indented_lines:
+                    self._output_line += 1
+                    src_line_counter += 1
+                    if src_line_counter <= num_src_lines:
+                        self._line_map[self._output_line] = (
+                            cell_id,
+                            src_line_counter,
+                        )
+
+            # await inject(event) line
+            self._output_line += 1
+
             step_func_code = f"""@async_step
 async def processor_internal(inject, event):
-{"".join(list(self._cell_processor_contents.values()))}    await inject(event)
+{"".join(v[0] for v in self._cell_processor_contents.values())}    await inject(event)
 """
             f.write(step_func_code)
+
+        return self._line_map
 
 
 def main():
@@ -110,8 +158,12 @@ def main():
         if os.path.exists(app.Notebook):
             with open(app.Notebook) as nb:
                 notebook = json.load(nb)
-                compiler.compile_notebook(
-                    notebook, out_path=f"{tmpdirname}/autopipeline_tmp.py"
+                compiled_path = f"{tmpdirname}/autopipeline_tmp.py"
+                line_map = compiler.compile_notebook(
+                    notebook, out_path=compiled_path
+                )
+                bspump.notebook_traceback.install(
+                    app.Notebook, compiled_path, line_map
                 )
                 sys.path.insert(0, tmpdirname)
                 tmp_module = __import__("autopipeline_tmp")  # noqa: F841
