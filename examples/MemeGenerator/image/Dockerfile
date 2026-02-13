@@ -1,2 +1,2 @@
-FROM bitswan/pipeline-runtime-environment:2025-18714922402-git-e62ea3d
+FROM bitswan/pipeline-runtime-environment:2026-21978505873-git-e3ec42f
 RUN pip3 install Pillow
