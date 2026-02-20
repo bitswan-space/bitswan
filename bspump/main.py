@@ -151,7 +151,9 @@ async def processor_internal(inject, event):
         return self._line_map
 
 
-def print_compiled_notebook_with_error(compiled_path: str, error_line: int | None = None):
+def print_compiled_notebook_with_error(
+    compiled_path: str, error_line: int | None = None
+):
     """Print the compiled notebook contents with line numbers for debugging.
 
     Args:
@@ -193,7 +195,7 @@ def main():
                     tmp_module = __import__("autopipeline_tmp")  # noqa: F841
                 except SyntaxError as e:
                     print(f"\nSyntaxError in compiled notebook: {e}", file=sys.stderr)
-                    error_line = e.lineno if hasattr(e, 'lineno') else None
+                    error_line = e.lineno if hasattr(e, "lineno") else None
                     print_compiled_notebook_with_error(compiled_path, error_line)
                     raise
         else:
