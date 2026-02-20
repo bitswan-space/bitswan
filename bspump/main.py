@@ -151,6 +151,29 @@ async def processor_internal(inject, event):
         return self._line_map
 
 
+def print_compiled_notebook_with_error(compiled_path: str, error_line: int | None = None):
+    """Print the compiled notebook contents with line numbers for debugging.
+
+    Args:
+        compiled_path: Path to the compiled Python file
+        error_line: Optional line number where the error occurred (1-indexed)
+    """
+    print("\n" + "=" * 60, file=sys.stderr)
+    print("COMPILED NOTEBOOK CONTENTS:", file=sys.stderr)
+    print("=" * 60, file=sys.stderr)
+
+    try:
+        with open(compiled_path, "r") as f:
+            lines = f.readlines()
+            for i, line in enumerate(lines, 1):
+                marker = ">>> " if i == error_line else "    "
+                print(f"{marker}{i:4d} | {line}", end="", file=sys.stderr)
+    except Exception as e:
+        print(f"Could not read compiled file: {e}", file=sys.stderr)
+
+    print("\n" + "=" * 60, file=sys.stderr)
+
+
 def main():
     app = App()  # noqa: F405
     compiler = NotebookCompiler()
@@ -166,7 +189,13 @@ def main():
                 line_map = compiler.compile_notebook(notebook, out_path=compiled_path)
                 bspump.notebook_traceback.install(app.Notebook, compiled_path, line_map)
                 sys.path.insert(0, tmpdirname)
-                tmp_module = __import__("autopipeline_tmp")  # noqa: F841
+                try:
+                    tmp_module = __import__("autopipeline_tmp")  # noqa: F841
+                except SyntaxError as e:
+                    print(f"\nSyntaxError in compiled notebook: {e}", file=sys.stderr)
+                    error_line = e.lineno if hasattr(e, 'lineno') else None
+                    print_compiled_notebook_with_error(compiled_path, error_line)
+                    raise
         else:
             exit(f"Notebook {app.Notebook} not found")
 
