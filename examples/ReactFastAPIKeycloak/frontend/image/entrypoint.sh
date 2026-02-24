@@ -4,17 +4,14 @@ set -e
 ln -sf /deps/node_modules /app/node_modules
 ln -sf /deps/package.json /app/package.json
 
-# Config content for frontend (including Keycloak settings)
+# Config content for frontend (AOC auth instead of direct Keycloak)
 CONFIG_CONTENT="window.__BITSWAN_CONFIG__ = {
   workspaceName: \"${BITSWAN_WORKSPACE_NAME}\",
   deploymentId: \"${BITSWAN_DEPLOYMENT_ID}\",
   stage: \"${BITSWAN_AUTOMATION_STAGE}\",
   domain: \"${BITSWAN_GITOPS_DOMAIN}\",
-  keycloak: {
-    url: \"${KEYCLOAK_URL}\",
-    realm: \"${KEYCLOAK_REALM}\",
-    clientId: \"${KEYCLOAK_CLIENT_ID}\"
-  }
+  aocUrl: \"${AOC_URL}\",
+  workspaceId: \"${BITSWAN_WORKSPACE_ID}\"
 };"
 
 # Live dev mode: run Vite dev server with hot reload

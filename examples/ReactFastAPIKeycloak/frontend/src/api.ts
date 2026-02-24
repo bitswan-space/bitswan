@@ -1,6 +1,6 @@
 // BitSwan API client for connecting to backend automations
 
-import { getToken } from './keycloak'
+import { getToken } from './auth'
 
 interface BitswanConfig {
   workspaceName?: string
