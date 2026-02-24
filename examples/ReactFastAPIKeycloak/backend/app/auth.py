@@ -6,12 +6,11 @@ from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from jose import JWTError, jwt
 
-# Environment variables (same as frontend uses)
-KEYCLOAK_URL = os.getenv("KEYCLOAK_URL", "")
-KEYCLOAK_REALM = os.getenv("KEYCLOAK_REALM", "")
+# AOC URL for fetching JWKS and validating tokens
+AOC_URL = os.getenv("AOC_URL", "")
 
 # Disable SSL verification for localhost, enable for production
-SSL_VERIFY = "localhost" not in KEYCLOAK_URL
+SSL_VERIFY = "localhost" not in AOC_URL
 
 # Security scheme
 security = HTTPBearer()
@@ -21,22 +20,22 @@ _jwks_cache: Optional[dict] = None
 
 
 def get_jwks_url() -> str:
-    """Build the JWKS URL from Keycloak configuration."""
-    if not KEYCLOAK_URL or not KEYCLOAK_REALM:
+    """Build the JWKS URL from AOC configuration."""
+    if not AOC_URL:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Keycloak not configured",
+            detail="AOC_URL not configured",
         )
-    return f"{KEYCLOAK_URL}/realms/{KEYCLOAK_REALM}/protocol/openid-connect/certs"
+    return f"{AOC_URL}/api/auth/.well-known/jwks.json"
 
 
 def get_issuer() -> str:
     """Get the expected token issuer."""
-    return f"{KEYCLOAK_URL}/realms/{KEYCLOAK_REALM}"
+    return f"{AOC_URL}/api/auth"
 
 
 async def get_jwks() -> dict:
-    """Fetch and cache JWKS from Keycloak."""
+    """Fetch and cache JWKS from AOC."""
     global _jwks_cache
     if _jwks_cache is None:
         async with httpx.AsyncClient(verify=SSL_VERIFY) as client:
@@ -64,7 +63,7 @@ def get_signing_key(token: str, jwks: dict) -> dict:
 async def verify_token(
     credentials: HTTPAuthorizationCredentials = Depends(security),
 ) -> dict:
-    """Verify JWT token and return the decoded payload."""
+    """Verify AOC JWT token and return the decoded payload."""
     token = credentials.credentials
 
     try:
@@ -75,8 +74,7 @@ async def verify_token(
             token,
             signing_key,
             algorithms=["RS256"],
-            issuer=get_issuer(),
-            options={"verify_aud": False},  # Audience varies by client
+            options={"verify_aud": False},
         )
         return payload
 
@@ -101,14 +99,14 @@ async def verify_token(
 
 
 class User:
-    """Parsed user information from token."""
+    """Parsed user information from AOC token."""
 
     def __init__(self, payload: dict):
         self.sub = payload.get("sub")
         self.username = payload.get("preferred_username")
         self.email = payload.get("email")
-        self.name = payload.get("name")
-        self.roles = payload.get("realm_access", {}).get("roles", [])
+        self.workspace_id = payload.get("workspace_id")
+        self.groups = payload.get("groups", [])
         self.payload = payload
 
 

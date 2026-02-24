@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { backend } from './api'
-import { getUserInfo, logout } from './keycloak'
+import { getUserInfo, logout } from './auth'
 import './App.css'
 
 interface RootResponse {
@@ -34,10 +34,10 @@ function App() {
   return (
     <div className="app">
       <div className="user-bar">
-        <span>Welcome, {user?.name || user?.username || 'User'}</span>
+        <span>Welcome, {user?.username || 'User'}</span>
         <button onClick={logout} className="logout-btn">Logout</button>
       </div>
-      <h1>React + FastAPI + Keycloak</h1>
+      <h1>React + FastAPI + AOC Auth</h1>
       <p className="message">Backend says: {message}</p>
       <div className="card">
         <button onClick={incrementCount}>
@@ -50,7 +50,9 @@ function App() {
           <h3>User Info</h3>
           <p>Username: {user.username}</p>
           <p>Email: {user.email}</p>
-          <p>Name: {user.name}</p>
+          <p>User ID: {user.sub}</p>
+          <p>Workspace: {user.workspace_id}</p>
+          <p>Groups: {user.groups?.length ? user.groups.join(', ') : 'None'}</p>
         </div>
       )}
     </div>
