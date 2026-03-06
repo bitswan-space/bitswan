@@ -74,6 +74,29 @@ export const getBackendUrl = (): string | null => {
   return buildUrl(backendDeploymentId)
 }
 
+// Access token management for authenticated backend calls.
+// The token is fetched from oauth2-proxy's /oauth2/auth endpoint
+// which returns the Keycloak access token in a response header.
+let cachedToken: string | null = null
+
+async function fetchAccessToken(): Promise<string> {
+  const response = await fetch('/oauth2/auth')
+  if (!response.ok) {
+    throw new Error(`Failed to fetch access token: ${response.status}`)
+  }
+  const token = response.headers.get('X-Auth-Request-Access-Token')
+  if (!token) {
+    throw new Error('No access token in oauth2-proxy response')
+  }
+  cachedToken = token
+  return token
+}
+
+export async function getAccessToken(): Promise<string> {
+  if (cachedToken) return cachedToken
+  return fetchAccessToken()
+}
+
 // Backend API client
 class BackendClient {
   baseUrl: string | null
@@ -87,14 +110,23 @@ class BackendClient {
       throw new Error('Backend URL not configured')
     }
 
+    const token = await getAccessToken()
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+      ...(options.headers as Record<string, string>),
+      'Authorization': `Bearer ${token}`,
+    }
+
     const url = `${this.baseUrl}${path}`
-    const response = await fetch(url, {
-      ...options,
-      headers: {
-        'Content-Type': 'application/json',
-        ...options.headers,
-      },
-    })
+    let response = await fetch(url, { ...options, headers })
+
+    // If 401, token may have expired — refresh and retry once
+    if (response.status === 401) {
+      cachedToken = null
+      const newToken = await fetchAccessToken()
+      headers['Authorization'] = `Bearer ${newToken}`
+      response = await fetch(url, { ...options, headers })
+    }
 
     if (!response.ok) {
       throw new Error(`HTTP ${response.status}: ${response.statusText}`)
@@ -128,5 +160,27 @@ class BackendClient {
 
 // Singleton instance
 export const backend = new BackendClient()
+
+// OAuth2 Proxy user info
+export interface UserInfo {
+  email?: string
+  user?: string
+  groups?: string[]
+  preferredUsername?: string
+}
+
+export async function getUserInfo(): Promise<UserInfo> {
+  const response = await fetch('/oauth2/userinfo')
+  if (!response.ok) {
+    throw new Error(`Failed to fetch user info: ${response.status}`)
+  }
+  const data = await response.json()
+  return {
+    email: data.email,
+    user: data.user,
+    groups: data.groups,
+    preferredUsername: data.preferredUsername || data.preferred_username,
+  }
+}
 
 export default BackendClient

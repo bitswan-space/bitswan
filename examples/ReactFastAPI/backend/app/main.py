@@ -1,9 +1,78 @@
 import os
+import logging
 
-from fastapi import FastAPI
+import httpx
+import jwt
+from fastapi import FastAPI, Depends, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 
+logger = logging.getLogger(__name__)
 app = FastAPI()
+security = HTTPBearer(auto_error=False)
+
+# --- JWKS token validation ---
+
+KEYCLOAK_ISSUER_URL = os.environ.get("KEYCLOAK_ISSUER_URL")
+if not KEYCLOAK_ISSUER_URL:
+    raise RuntimeError("KEYCLOAK_ISSUER_URL is not set — cannot validate tokens")
+JWKS_URL = f"{KEYCLOAK_ISSUER_URL}/protocol/openid-connect/certs"
+_jwks_keys: list[dict] | None = None
+
+
+async def _get_jwks_keys() -> list[dict]:
+    """Fetch and cache JWKS public keys from Keycloak."""
+    global _jwks_keys
+    if _jwks_keys is not None:
+        return _jwks_keys
+
+    async with httpx.AsyncClient(verify=False) as client:
+        resp = await client.get(JWKS_URL)
+        resp.raise_for_status()
+        _jwks_keys = resp.json().get("keys", [])
+    return _jwks_keys
+
+
+async def validate_token(
+    credentials: HTTPAuthorizationCredentials | None = Depends(security),
+) -> dict:
+    """Validate a Bearer JWT token against Keycloak's JWKS keys."""
+
+    if not credentials:
+        raise HTTPException(status_code=401, detail="Missing authorization token")
+
+    token = credentials.credentials
+    try:
+        keys = await _get_jwks_keys()
+        header = jwt.get_unverified_header(token)
+        kid = header.get("kid")
+
+        key_data = next((k for k in keys if k.get("kid") == kid), None)
+        if not key_data:
+            # Key not found — JWKS may have rotated, refetch once
+            global _jwks_keys
+            _jwks_keys = None
+            keys = await _get_jwks_keys()
+            key_data = next((k for k in keys if k.get("kid") == kid), None)
+            if not key_data:
+                raise HTTPException(status_code=401, detail="Unknown signing key")
+
+        public_key = jwt.algorithms.RSAAlgorithm.from_jwk(key_data)
+        payload = jwt.decode(
+            token,
+            key=public_key,
+            algorithms=["RS256"],
+            options={"verify_aud": False},
+        )
+        return payload
+
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(status_code=401, detail="Token expired")
+    except jwt.InvalidTokenError as e:
+        raise HTTPException(status_code=401, detail=f"Invalid token: {e}")
+
+
+# --- CORS ---
 
 
 def get_frontend_url() -> str | None:
@@ -49,8 +118,8 @@ counter = {"count": 0}
 
 
 @app.get("/")
-def root():
-    return {"message": "Hello from FastAPI!"}
+async def root(claims: dict = Depends(validate_token)):
+    return {"message": "Hello from FastAPI!", "user": claims.get("preferred_username")}
 
 
 @app.get("/health")
@@ -59,11 +128,11 @@ def health():
 
 
 @app.post("/count")
-def increment_count():
+async def increment_count(claims: dict = Depends(validate_token)):
     counter["count"] += 1
     return {"count": counter["count"]}
 
 
 @app.get("/count")
-def get_count():
+async def get_count(claims: dict = Depends(validate_token)):
     return {"count": counter["count"]}

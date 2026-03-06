@@ -79,19 +79,20 @@ export const getBackendUrl = (): string | null => {
 // which returns the Keycloak access token in a response header.
 let cachedToken: string | null = null
 
-async function fetchAccessToken(): Promise<string | null> {
-  try {
-    const response = await fetch('/oauth2/auth')
-    if (!response.ok) return null
-    const token = response.headers.get('X-Auth-Request-Access-Token')
-    if (token) cachedToken = token
-    return token
-  } catch {
-    return null
+async function fetchAccessToken(): Promise<string> {
+  const response = await fetch('/oauth2/auth')
+  if (!response.ok) {
+    throw new Error(`Failed to fetch access token: ${response.status}`)
   }
+  const token = response.headers.get('X-Auth-Request-Access-Token')
+  if (!token) {
+    throw new Error('No access token in oauth2-proxy response')
+  }
+  cachedToken = token
+  return token
 }
 
-export async function getAccessToken(): Promise<string | null> {
+export async function getAccessToken(): Promise<string> {
   if (cachedToken) return cachedToken
   return fetchAccessToken()
 }
@@ -113,22 +114,18 @@ class BackendClient {
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
       ...(options.headers as Record<string, string>),
-    }
-    if (token) {
-      headers['Authorization'] = `Bearer ${token}`
+      'Authorization': `Bearer ${token}`,
     }
 
     const url = `${this.baseUrl}${path}`
     let response = await fetch(url, { ...options, headers })
 
     // If 401, token may have expired — refresh and retry once
-    if (response.status === 401 && token) {
+    if (response.status === 401) {
       cachedToken = null
       const newToken = await fetchAccessToken()
-      if (newToken) {
-        headers['Authorization'] = `Bearer ${newToken}`
-        response = await fetch(url, { ...options, headers })
-      }
+      headers['Authorization'] = `Bearer ${newToken}`
+      response = await fetch(url, { ...options, headers })
     }
 
     if (!response.ok) {
