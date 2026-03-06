@@ -13,7 +13,10 @@ security = HTTPBearer(auto_error=False)
 
 # --- JWKS token validation ---
 
-JWKS_URL = os.environ.get("OAUTH2_PROXY_OIDC_JWKS_URL")
+KEYCLOAK_ISSUER_URL = os.environ.get("KEYCLOAK_ISSUER_URL")
+if not KEYCLOAK_ISSUER_URL:
+    raise RuntimeError("KEYCLOAK_ISSUER_URL is not set — cannot validate tokens")
+JWKS_URL = f"{KEYCLOAK_ISSUER_URL}/protocol/openid-connect/certs"
 _jwks_keys: list[dict] | None = None
 
 
@@ -22,10 +25,6 @@ async def _get_jwks_keys() -> list[dict]:
     global _jwks_keys
     if _jwks_keys is not None:
         return _jwks_keys
-
-    if not JWKS_URL:
-        logger.warning("OAUTH2_PROXY_OIDC_JWKS_URL not set, token validation disabled")
-        return []
 
     async with httpx.AsyncClient(verify=False) as client:
         resp = await client.get(JWKS_URL)
@@ -38,9 +37,6 @@ async def validate_token(
     credentials: HTTPAuthorizationCredentials | None = Depends(security),
 ) -> dict:
     """Validate a Bearer JWT token against Keycloak's JWKS keys."""
-    if not JWKS_URL:
-        # No JWKS configured — allow unauthenticated access (dev mode)
-        return {}
 
     if not credentials:
         raise HTTPException(status_code=401, detail="Missing authorization token")

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { backend } from './api'
+import { backend, getUserInfo, type UserInfo } from './api'
 import './App.css'
 
 interface RootResponse {
@@ -13,11 +13,16 @@ interface CountResponse {
 function App() {
   const [message, setMessage] = useState('Loading...')
   const [count, setCount] = useState(0)
+  const [user, setUser] = useState<UserInfo | null>(null)
 
   useEffect(() => {
     backend.get<RootResponse>('/')
       .then(data => setMessage(data.message))
       .catch(err => setMessage(`Error: ${err.message}`))
+
+    getUserInfo()
+      .then(setUser)
+      .catch(err => console.error('Failed to fetch user info:', err))
   }, [])
 
   const incrementCount = async () => {
@@ -32,6 +37,18 @@ function App() {
   return (
     <div className="app">
       <h1>React + FastAPI</h1>
+
+      {user && (
+        <div className="card">
+          <h2>User Info</h2>
+          {user.email && <p>Email: {user.email}</p>}
+          {user.preferredUsername && <p>Username: {user.preferredUsername}</p>}
+          {user.groups && user.groups.length > 0 && (
+            <p>Groups: {user.groups.join(', ')}</p>
+          )}
+        </div>
+      )}
+
       <p className="message">Backend says: {message}</p>
       <div className="card">
         <button onClick={incrementCount}>

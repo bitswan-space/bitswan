@@ -36,7 +36,7 @@ function App() {
 
   return (
     <div className="app">
-      <h1>React + FastAPI + Keycloak</h1>
+      <h1>React + FastAPI</h1>
 
       {user && (
         <div className="card">

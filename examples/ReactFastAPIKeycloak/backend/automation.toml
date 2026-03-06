@@ -1,2 +1,2 @@
 [deployment]
-expose_to = ["/Example Org"]
+expose = true
