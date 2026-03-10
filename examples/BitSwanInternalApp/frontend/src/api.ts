@@ -97,6 +97,27 @@ export async function getAccessToken(): Promise<string> {
   return fetchAccessToken()
 }
 
+export interface TokenInfo {
+  expiresAt: Date
+  issuedAt: Date
+  ttlSeconds: number
+}
+
+export function getTokenInfo(): TokenInfo | null {
+  if (!cachedToken) return null
+  try {
+    const payload = JSON.parse(atob(cachedToken.split('.')[1]))
+    const now = Math.floor(Date.now() / 1000)
+    return {
+      expiresAt: new Date(payload.exp * 1000),
+      issuedAt: new Date(payload.iat * 1000),
+      ttlSeconds: payload.exp - now,
+    }
+  } catch {
+    return null
+  }
+}
+
 // Backend API client
 class BackendClient {
   baseUrl: string | null
