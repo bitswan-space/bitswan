@@ -46,3 +46,17 @@ button:focus,
 button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
+
+.expired {
+  color: #dc3545 !important;
+  font-weight: bold;
+}
+
+button.sign-out {
+  margin-top: 1em;
+  background-color: #dc3545;
+}
+
+button.sign-out:hover {
+  border-color: #ff4d5e;
+}
