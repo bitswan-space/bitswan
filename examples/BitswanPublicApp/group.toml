@@ -1,4 +1,4 @@
-name = "ReactFastAPI"
+name = "Bitswan Public App"
 short_description = """
 A full-stack application with a React frontend and FastAPI backend. The frontend calls the backend API.
 """
