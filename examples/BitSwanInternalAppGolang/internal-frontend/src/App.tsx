@@ -136,16 +136,17 @@ function App() {
     }
   }
 
-  const toggleLang = () => {
-    i18n.changeLanguage(i18n.language === 'cs' ? 'en' : 'cs')
+  const changeLang = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    i18n.changeLanguage(e.target.value)
   }
 
   return (
     <div className="app">
       <div className="toolbar">
-        <button onClick={toggleLang}>
-          {i18n.language === 'cs' ? t('language.en') : t('language.cs')}
-        </button>
+        <select className="lang-select" value={i18n.language} onChange={changeLang}>
+          <option value="en">{t('language.en')}</option>
+          <option value="cs">{t('language.cs')}</option>
+        </select>
         <button onClick={toggleTheme}>
           {theme === 'dark' ? '☀️' : '🌙'}
         </button>
@@ -216,6 +217,13 @@ function App() {
           {gallery.length === 0 && <p>{t('gallery.empty')}</p>}
         </div>
       </div>
+
+      <footer className="powered-by">
+        <a href="https://bitswan.ai" target="_blank" rel="noopener noreferrer">
+          <img src="/bitswan.svg" alt="BitSwan" className="powered-by-logo" />
+          Powered by BitSwan
+        </a>
+      </footer>
     </div>
   )
 }

@@ -1,0 +1,10 @@
+{
+  "app.title": "External Dashboard",
+  "app.description": "This is the external frontend of your BitSwan Internal App. It is intended for users outside your company — customers, partners, or the general public. Authentication on this frontend is not managed by the AOC, but you can add your own if needed. Use it for public forms, displaying information externally, or any customer-facing feature.",
+  "gallery.title": "Image Gallery",
+  "gallery.description": "Images shared by internal users.",
+  "gallery.empty": "No images yet.",
+  "error.prefix": "Error",
+  "language.en": "English",
+  "language.cs": "Čeština"
+}

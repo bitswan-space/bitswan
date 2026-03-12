@@ -1,3 +1,0 @@
-[deployment]
-image = "internal/public-frontend:shadc58a736deb86302274957a16b967bda2e3360b9"
-expose = true

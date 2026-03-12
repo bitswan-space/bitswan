@@ -14,7 +14,7 @@
   "counter.title": "Your Count",
   "counter.description": "Click the button to increment your personal counter (stored in PostgreSQL).",
   "gallery.title": "Image Gallery",
-  "gallery.description": "Upload images to the shared gallery (stored in MinIO). These images are also visible on the public frontend.",
+  "gallery.description": "Upload images to the shared gallery (stored in MinIO). These images are also visible on the external frontend.",
   "gallery.upload": "Upload",
   "gallery.uploading": "Uploading...",
   "gallery.delete": "Delete",
