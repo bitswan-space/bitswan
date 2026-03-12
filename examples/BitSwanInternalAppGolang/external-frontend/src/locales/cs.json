@@ -1,0 +1,10 @@
+{
+  "app.title": "Externí dashboard",
+  "app.description": "Toto je externí frontend vaší BitSwan Internal App. Je určen pro uživatele mimo vaši společnost — zákazníky, partnery nebo širokou veřejnost. Autentizace na tomto frontendu není spravována přes AOC, ale můžete si přidat vlastní. Použijte jej pro veřejné formuláře, zobrazení informací externě nebo jakoukoli funkci určenou zákazníkům.",
+  "gallery.title": "Galerie obrázků",
+  "gallery.description": "Obrázky sdílené interními uživateli.",
+  "gallery.empty": "Zatím žádné obrázky.",
+  "error.prefix": "Chyba",
+  "language.en": "English",
+  "language.cs": "Čeština"
+}

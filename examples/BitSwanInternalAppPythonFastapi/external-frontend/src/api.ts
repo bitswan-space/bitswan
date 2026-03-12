@@ -1,4 +1,4 @@
-// BitSwan API client for the public app (no authentication required)
+// BitSwan API client for the external app (no authentication required)
 
 declare global {
   interface Window {
@@ -33,7 +33,7 @@ export const getBackendUrl = (): string | null => {
   return base ? `${base}/public` : null
 }
 
-// Backend API client (no auth — public app)
+// Backend API client (no auth — external app)
 class BackendClient {
   baseUrl: string | null
 

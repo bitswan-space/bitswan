@@ -1,0 +1,3 @@
+[deployment]
+image = "internal/external-frontend:sha85dcfbd49c923c4f2ca387d3041e22062dac4d5a"
+expose = true

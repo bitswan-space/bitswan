@@ -14,7 +14,7 @@
   "counter.title": "Váš počet",
   "counter.description": "Kliknutím na tlačítko zvýšíte svůj osobní počítadlo (uloženo v PostgreSQL).",
   "gallery.title": "Galerie obrázků",
-  "gallery.description": "Nahrajte obrázky do sdílené galerie (uloženy v MinIO). Tyto obrázky jsou viditelné i na veřejném frontendu.",
+  "gallery.description": "Nahrajte obrázky do sdílené galerie (uloženy v MinIO). Tyto obrázky jsou viditelné i na externím frontendu.",
   "gallery.upload": "Nahrát",
   "gallery.uploading": "Nahrávání...",
   "gallery.delete": "Smazat",

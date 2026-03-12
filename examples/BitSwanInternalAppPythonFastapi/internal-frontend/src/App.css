@@ -17,6 +17,23 @@
   padding: 0.4em 0.8em;
 }
 
+.lang-select {
+  font-size: 0.85em;
+  padding: 0.4em 0.8em;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  background-color: var(--btn-bg);
+  color: var(--btn-text, var(--text));
+  font-family: inherit;
+  font-weight: 500;
+  cursor: pointer;
+  transition: border-color 0.25s;
+}
+
+.lang-select:hover {
+  border-color: var(--btn-hover-border);
+}
+
 .description {
   color: var(--text-secondary);
   font-size: 1em;
@@ -159,4 +176,29 @@ button.delete-btn {
 
 button.delete-btn:hover {
   border-color: #ff4d5e;
+}
+
+.powered-by {
+  margin-top: 3em;
+  padding: 1.5em 0;
+  border-top: 1px solid var(--border);
+}
+
+.powered-by a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: 0.85em;
+  transition: color 0.2s;
+}
+
+.powered-by a:hover {
+  color: var(--text);
+}
+
+.powered-by-logo {
+  width: 20px;
+  height: 20px;
 }
