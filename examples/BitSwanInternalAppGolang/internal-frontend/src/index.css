@@ -1,11 +1,38 @@
+:root, [data-theme="light"] {
+  --bg: #ffffff;
+  --bg-secondary: #f5f5f5;
+  --text: #213547;
+  --text-secondary: #666;
+  --border: #ddd;
+  --card-bg: #f9f9f9;
+  --btn-bg: #f0f0f0;
+  --btn-text: #213547;
+  --btn-hover-border: #646cff;
+  --danger: #dc3545;
+  --accent: #646cff;
+}
+
+[data-theme="dark"] {
+  --bg: #242424;
+  --bg-secondary: #2a2a2a;
+  --text: rgba(255, 255, 255, 0.87);
+  --text-secondary: #888;
+  --border: #333;
+  --card-bg: #1a1a1a;
+  --btn-bg: #1a1a1a;
+  --btn-text: #fff;
+  --btn-hover-border: #646cff;
+  --danger: #dc3545;
+  --accent: #646cff;
+}
+
 :root {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  color: var(--text);
+  background-color: var(--bg);
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;

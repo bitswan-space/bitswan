@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
-import { backend, getUserInfo, getAccessToken, getTokenInfo, getImageUrl, type UserInfo, type TokenInfo } from './api'
+import { useTranslation } from 'react-i18next'
+import { backend, getUserInfo, getAccessToken, getImageUrl, getTokenInfo, type UserInfo, type TokenInfo } from './api'
 import './App.css'
 
 interface RootResponse {
@@ -25,6 +26,22 @@ interface GalleryResponse {
   images: GalleryImage[]
 }
 
+function useTheme() {
+  const [theme, setTheme] = useState<'light' | 'dark'>(() => {
+    const stored = localStorage.getItem('theme')
+    if (stored === 'light' || stored === 'dark') return stored
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+  })
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme)
+    localStorage.setItem('theme', theme)
+  }, [theme])
+
+  const toggle = () => setTheme(t => t === 'dark' ? 'light' : 'dark')
+  return { theme, toggle }
+}
+
 function AuthImage({ path, alt }: { path: string; alt: string }) {
   const [src, setSrc] = useState<string>('')
   useEffect(() => {
@@ -37,6 +54,8 @@ function AuthImage({ path, alt }: { path: string; alt: string }) {
 }
 
 function App() {
+  const { t, i18n } = useTranslation()
+  const { theme, toggle: toggleTheme } = useTheme()
   const [message, setMessage] = useState('Loading...')
   const [count, setCount] = useState(0)
   const [user, setUser] = useState<UserInfo | null>(null)
@@ -62,13 +81,11 @@ function App() {
       .then(data => setGallery(data.images))
       .catch(err => console.error('Failed to fetch gallery:', err))
 
-    // Fetch token so we can display its info
     getAccessToken()
       .then(() => setTokenInfo(getTokenInfo()))
       .catch(() => {})
   }, [])
 
-  // Update TTL every second
   useEffect(() => {
     const interval = setInterval(() => {
       const info = getTokenInfo()
@@ -119,31 +136,45 @@ function App() {
     }
   }
 
+  const toggleLang = () => {
+    i18n.changeLanguage(i18n.language === 'cs' ? 'en' : 'cs')
+  }
+
   return (
     <div className="app">
-      <h1>BitSwan Internal App</h1>
+      <div className="toolbar">
+        <button onClick={toggleLang}>
+          {i18n.language === 'cs' ? t('language.en') : t('language.cs')}
+        </button>
+        <button onClick={toggleTheme}>
+          {theme === 'dark' ? '☀️' : '🌙'}
+        </button>
+      </div>
+
+      <h1>{t('app.title')}</h1>
+      <p className="description">{t('app.description')}</p>
 
       {user && (
         <div className="card">
-          <h2>User Info</h2>
-          {user.email && <p>Email: {user.email}</p>}
-          {user.preferredUsername && <p>Username: {user.preferredUsername}</p>}
+          <h2>{t('userInfo.title')}</h2>
+          {user.email && <p>{t('userInfo.email')}: {user.email}</p>}
+          {user.preferredUsername && <p>{t('userInfo.username')}: {user.preferredUsername}</p>}
           {user.groups && user.groups.length > 0 && (
-            <p>Groups: {user.groups.join(', ')}</p>
+            <p>{t('userInfo.groups')}: {user.groups.join(', ')}</p>
           )}
           <button className="sign-out" onClick={() => window.location.href = '/oauth2/sign_out'}>
-            Sign Out
+            {t('userInfo.signOut')}
           </button>
         </div>
       )}
 
       {tokenInfo && (
         <div className="card">
-          <h2>Token Info</h2>
-          <p>Issued: {tokenInfo.issuedAt.toLocaleTimeString()}</p>
-          <p>Expires: {tokenInfo.expiresAt.toLocaleTimeString()}</p>
+          <h2>{t('tokenInfo.title')}</h2>
+          <p>{t('tokenInfo.issued')}: {tokenInfo.issuedAt.toLocaleTimeString()}</p>
+          <p>{t('tokenInfo.expires')}: {tokenInfo.expiresAt.toLocaleTimeString()}</p>
           <p className={tokenInfo.ttlSeconds <= 0 ? 'expired' : ''}>
-            TTL: {tokenInfo.ttlSeconds}s {tokenInfo.ttlSeconds <= 0 ? '(expired)' : ''}
+            {t('tokenInfo.ttl')}: {tokenInfo.ttlSeconds}s {tokenInfo.ttlSeconds <= 0 ? `(${t('tokenInfo.expired')})` : ''}
           </p>
         </div>
       )}
@@ -151,14 +182,14 @@ function App() {
       <p className="message">Backend says: {message}</p>
       <div className="card">
         <button onClick={incrementCount}>
-          Your Count: {count}
+          {t('counter.title')}: {count}
         </button>
-        <p>Click the button to increment your personal counter (stored in PostgreSQL)</p>
+        <p>{t('counter.description')}</p>
       </div>
 
       <div className="card">
-        <h2>Image Gallery</h2>
-        <p>Upload images to the shared MinIO gallery. Public users can view these.</p>
+        <h2>{t('gallery.title')}</h2>
+        <p>{t('gallery.description')}</p>
         <div className="upload-area">
           <input
             ref={fileInputRef}
@@ -167,7 +198,7 @@ function App() {
             onChange={handleUpload}
             disabled={uploading}
           />
-          {uploading && <span className="uploading">Uploading...</span>}
+          {uploading && <span className="uploading">{t('gallery.uploading')}</span>}
         </div>
         <div className="gallery-grid">
           {gallery.map(img => (
@@ -178,11 +209,11 @@ function App() {
                 <span className="gallery-item-meta">
                   by {img.uploaded_by} &middot; {new Date(img.created_at).toLocaleDateString()}
                 </span>
-                <button className="delete-btn" onClick={() => handleDelete(img.key)}>Delete</button>
+                <button className="delete-btn" onClick={() => handleDelete(img.key)}>{t('gallery.delete')}</button>
               </div>
             </div>
           ))}
-          {gallery.length === 0 && <p>No images yet.</p>}
+          {gallery.length === 0 && <p>{t('gallery.empty')}</p>}
         </div>
       </div>
     </div>

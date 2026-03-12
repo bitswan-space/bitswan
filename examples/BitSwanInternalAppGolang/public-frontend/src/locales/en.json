@@ -1,0 +1,10 @@
+{
+  "app.title": "Public Dashboard",
+  "app.description": "This is the public frontend of your BitSwan Internal App. It does not require authentication and can be used to share information externally. This frontend is optional — you can leave it blank or remove it if your app only needs the internal dashboard.",
+  "gallery.title": "Image Gallery",
+  "gallery.description": "Images shared by internal users.",
+  "gallery.empty": "No images yet.",
+  "error.prefix": "Error",
+  "language.en": "English",
+  "language.cs": "Čeština"
+}
