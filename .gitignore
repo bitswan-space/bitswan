@@ -116,3 +116,6 @@ doc/_build
 # VSCode
 .vscode/
 
+# Node
+node_modules
+

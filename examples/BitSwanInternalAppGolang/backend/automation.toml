@@ -1,5 +1,5 @@
 [deployment]
-image = "internal/backend:sha5b419c6bac0c0aadf50956f49d58dc5717a94873"
+image = "internal/backend:sha183ea69727896fe7cb777dd76baf7b477d5aa8ac"
 expose = true
 
 [services.postgres]
