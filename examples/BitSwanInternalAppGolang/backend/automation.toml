@@ -1,0 +1,9 @@
+[deployment]
+image = "internal/backend:sha5b419c6bac0c0aadf50956f49d58dc5717a94873"
+expose = true
+
+[services.postgres]
+enabled=true
+
+[services.minio]
+enabled=true
