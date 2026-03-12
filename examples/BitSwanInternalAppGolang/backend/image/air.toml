@@ -1,0 +1,15 @@
+root = "/app"
+tmp_dir = "/tmp/air"
+
+[build]
+  cmd = "go build -o /tmp/air/server ."
+  bin = "/tmp/air/server"
+  include_ext = ["go", "toml"]
+  exclude_dir = ["image"]
+  delay = 1000
+
+[log]
+  time = false
+
+[misc]
+  clean_on_exit = true
