@@ -109,6 +109,11 @@ include = [
     "static/**/*"
 ]
 
+[tool.hatch.build.targets.sdist]
+exclude = [
+    "examples/",
+]
+
 [tool.hatch.version]
 source = "regex"
 path = "bspump/__version__.py"
