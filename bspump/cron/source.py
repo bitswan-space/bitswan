@@ -1,5 +1,4 @@
 import os
-import json
 import logging
 import traceback
 from collections import deque
@@ -203,12 +202,20 @@ class CronSource(TriggerSource):
 
     async def _handle_dashboard(self, request):
         try:
-            next_time = self._cron_trigger.next_trigger_time.isoformat(timespec="seconds")
+            next_time = self._cron_trigger.next_trigger_time.isoformat(
+                timespec="seconds"
+            )
         except Exception:
             next_time = "-"
 
-        auto_badge_class = "badge-active" if self._auto_trigger_active else "badge-inactive"
-        auto_badge_text = "Auto-trigger active" if self._auto_trigger_active else "Auto-trigger inactive"
+        auto_badge_class = (
+            "badge-active" if self._auto_trigger_active else "badge-inactive"
+        )
+        auto_badge_text = (
+            "Auto-trigger active"
+            if self._auto_trigger_active
+            else "Auto-trigger inactive"
+        )
 
         html = DASHBOARD_HTML.format(
             source_id=self.Id,
@@ -227,16 +234,20 @@ class CronSource(TriggerSource):
 
     async def _handle_runs(self, request):
         try:
-            next_time = self._cron_trigger.next_trigger_time.isoformat(timespec="seconds")
+            next_time = self._cron_trigger.next_trigger_time.isoformat(
+                timespec="seconds"
+            )
         except Exception:
             next_time = None
 
-        return aiohttp.web.json_response({
-            "runs": list(self._run_log),
-            "next_trigger": next_time,
-            "auto_trigger_active": self._auto_trigger_active,
-            "stage": self._current_stage,
-        })
+        return aiohttp.web.json_response(
+            {
+                "runs": list(self._run_log),
+                "next_trigger": next_time,
+                "auto_trigger_active": self._auto_trigger_active,
+                "stage": self._current_stage,
+            }
+        )
 
     async def cycle(self, *args, **kwargs):
         await self.Pipeline.ready()
