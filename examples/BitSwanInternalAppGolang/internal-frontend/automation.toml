@@ -2,7 +2,6 @@
 image = "internal/internal-frontend:shadc58a736deb86302274957a16b967bda2e3360b9"
 
 [expose_to]
-live-dev = ["/Example Organization"]
 dev = ["/Example Organization"]
 staging = ["/Example Organization"]
 production = ["/Example Organization"]
