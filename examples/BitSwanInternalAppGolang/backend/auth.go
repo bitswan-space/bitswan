@@ -7,13 +7,24 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"log"
 	"math/big"
 	"net/http"
+	"os"
 	"strings"
 	"sync"
 
 	jwtv5 "github.com/golang-jwt/jwt/v5"
 )
+
+var allowedGroup string
+
+func init() {
+	allowedGroup = os.Getenv("BITSWAN_ALLOWED_GROUP")
+	if allowedGroup == "" {
+		log.Fatal("BITSWAN_ALLOWED_GROUP is not set — cannot verify group membership")
+	}
+}
 
 type contextKey string
 
@@ -128,9 +139,28 @@ func (app *App) requireAuth(next http.Handler) http.Handler {
 			return
 		}
 
+		// Verify group membership
+		if !hasGroup(claims, allowedGroup) {
+			writeError(w, http.StatusForbidden, "User not in required group: "+allowedGroup)
+			return
+		}
+
 		ctx := context.WithValue(r.Context(), claimsKey, claims)
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
+}
+
+func hasGroup(claims jwtv5.MapClaims, group string) bool {
+	rawGroups, ok := claims["group_membership"].([]interface{})
+	if !ok {
+		return false
+	}
+	for _, g := range rawGroups {
+		if s, ok := g.(string); ok && s == group {
+			return true
+		}
+	}
+	return false
 }
 
 func getUsername(r *http.Request) string {

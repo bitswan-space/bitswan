@@ -2,6 +2,6 @@
 image = "internal/internal-frontend:sha85dcfbd49c923c4f2ca387d3041e22062dac4d5a"
 
 [expose_to]
-dev = ["/Example Organization"]
-staging = ["/Example Organization"]
-production = ["/Example Organization"]
+dev = ["/admin"]
+staging = ["/admin"]
+production = ["/admin"]

@@ -16,6 +16,10 @@ if not KEYCLOAK_ISSUER_URL:
 JWKS_URL = f"{KEYCLOAK_ISSUER_URL}/protocol/openid-connect/certs"
 _jwks_keys: list[dict] | None = None
 
+ALLOWED_GROUP = os.environ.get("BITSWAN_ALLOWED_GROUP")
+if not ALLOWED_GROUP:
+    raise RuntimeError("BITSWAN_ALLOWED_GROUP is not set — cannot verify group membership")
+
 
 async def _get_jwks_keys() -> list[dict]:
     """Fetch and cache JWKS public keys from Keycloak."""
@@ -74,6 +78,12 @@ async def require_auth(
 ):
     """Router-level dependency that validates the token and stores claims on request.state."""
     claims = await validate_token(credentials)
+    groups = claims.get("group_membership", [])
+    if ALLOWED_GROUP not in groups:
+        raise HTTPException(
+            status_code=403,
+            detail=f"User not in required group: {ALLOWED_GROUP}",
+        )
     request.state.claims = claims
 
 
