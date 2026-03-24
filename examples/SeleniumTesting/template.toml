@@ -1,0 +1,7 @@
+name = "SeleniumTesting"
+short_description = """
+End-to-end browser testing with Selenium. Runs on an isolated network with external internet access so tests connect to public service URLs like a real client. Includes Chrome headless and pytest-selenium.
+"""
+icon = """
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/><path d="m9 10 2 2 4-4"/></svg>
+"""
