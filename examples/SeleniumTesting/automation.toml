@@ -1,0 +1,3 @@
+[deployment]
+expose = false
+external-testing-network = true
