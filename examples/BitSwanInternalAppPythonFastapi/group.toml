@@ -1,6 +1,6 @@
 name = "Internal Company App (Flexible & Extensible)"
 short_description = """
-A ready-to-use starting point for internal business tools that need to evolve quickly. Includes a staff portal (login-protected, visible only to your team) and an optional public-facing site. Powered by a Python backend — ideal when you need to iterate fast, integrate data pipelines, or connect to AI and analytics libraries.
+A ready-to-use starting point for internal business tools that need to evolve quickly. Includes a staff portal (access-controlled via the Automation Operation Center (AOC)) and an optional public-facing site. Powered by a Python backend — ideal when you need to iterate fast, integrate data pipelines, or connect to AI and analytics libraries.
 """
 icon = """
 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#61dafb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
