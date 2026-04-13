@@ -1,0 +1,8 @@
+[deployment]
+expose = false
+
+[services.postgres]
+enabled = true
+
+[secrets]
+dev = ["discord-demo-bot"]
