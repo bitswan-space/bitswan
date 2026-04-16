@@ -220,14 +220,11 @@ class Pipeline(abc.ABC, bspump.asab.Configurable):
         """
         Returns False when there is no error, otherwise it returns True.
 
-        :return: self._error is not None.
-
-        Parameters: ---
-
-
-        :return: xxxx
+        _error is either None or a tuple (context, event, exc, timestamp).
+        inject() sets _error with exc=None as scratch space for error context;
+        only treat it as an actual error when exc (index 2) is not None.
         """
-        return self._error is not None
+        return self._error is not None and self._error[2] is not None
 
     def set_error(self, context, event, exc):
         """
@@ -420,7 +417,10 @@ class Pipeline(abc.ABC, bspump.asab.Configurable):
         orig_ready = self.is_ready()
 
         # Do we observed an error?
-        new_ready = self._error is None
+        # _error is either None or (context, event, exc, timestamp).
+        # inject() sets _error with exc=None as processing scratch space;
+        # only treat it as an actual error when exc (index 2) is not None.
+        new_ready = self._error is None or self._error[2] is None
 
         # Are we throttled?
         if new_ready:
