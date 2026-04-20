@@ -1,49 +1,82 @@
 [![Docs](https://img.shields.io/badge/docs-latest-brightgreen)](https://docs.bitswan.space)
 
-Bitswan: A tool for building Pipelines & Automations in Jupyter
-===============================================
+# BitSwan
 
-You can find example pipelines in the [examples](./examples/) directory.
+This repository contains two things:
 
-Installation
---------------
+1. **bspump** - The core stream processing library used by [BitSwan4Stream](https://bitswan.space)
+2. **Example automations** - Sample pipelines that can run in the [BitSwan Automation Server](https://github.com/bitswan-space/bitswan-automation-server)
 
-This library is part of the bitswan suite which is managed by the bitswan workspace cli.
-You must first install the [bitswan workspaces](https://github.com/bitswan-space/bitswan-workspaces) cli before installing and using the bitswan notebooks cli.
+## Deployment Options
 
-```
-$ git clone git@github.com:bitswan-space/BitSwan.git
-$ cd BitSwan
-$ curl -LsSf https://astral.sh/uv/install.sh | sh
-$ uv venv
-$ source .venv/bin/activate
-$ uv pip install -e ".[dev]"
-```
+BitSwan4Stream pipelines can be deployed to:
 
-Running pipelines
---------------------
+- **BitSwan Automation Server** - Managed deployment with monitoring and scheduling
+- **Apache Flink** - Distributed stream processing on Flink clusters
 
-You can run a pipeline with a simple command:
+## Installation
 
-```
-$ bitswan notebook examples/WebForms/main.ipynb
+```bash
+git clone git@github.com:bitswan-space/BitSwan.git
+cd BitSwan
+curl -LsSf https://astral.sh/uv/install.sh | sh
+uv venv
+source .venv/bin/activate
+uv pip install -e ".[dev]"
 ```
 
-When developing web endpoints it can be helpful to instruct the pipeline to automatically restart if the source code changes.
-
+For Flink support:
+```bash
+uv pip install -e ".[flink]"
 ```
-$ bitswan notebook examples/WebForms/main.ipynb --watch
+
+## Running Pipelines
+
+### Local Development
+
+Run a pipeline locally:
+
+```bash
+bitswan-notebook examples/WebForms/main.ipynb
 ```
 
-Running Tests
-----------------
+With auto-reload on code changes:
 
-You can find examples for automatically testing pipelines in the [testing examples](./examples/Testing) directory.
-
-Run tests with the `--test` flag.
-
+```bash
+bitswan-notebook examples/WebForms/main.ipynb --watch
 ```
-$ bitswan notebook examples/Testing/InspectError/main.ipynb --test
+
+### Deploy to Apache Flink
+
+Run on a local Flink mini-cluster:
+
+```bash
+bitswan-flink examples/Kafka2Kafka/main.ipynb
+```
+
+Submit to a Flink cluster:
+
+```bash
+bitswan-flink --flink-cluster jobmanager:8081 examples/Kafka2Kafka/main.ipynb
+```
+
+## Example Automations
+
+Example pipelines are in the [examples](./examples/) directory:
+
+- **Kafka2Kafka** - Stream processing between Kafka topics
+- **WebForms** - HTTP form handling
+- **WebHooks** - Webhook integrations
+- **TimeTrigger** - Scheduled automations
+
+## Testing
+
+Test examples are in the [examples/Testing](./examples/Testing) directory.
+
+Run tests with the `--test` flag:
+
+```bash
+bitswan-notebook examples/Testing/InspectError/main.ipynb --test
 
 Running tests for pipeline Kafka2KafkaPipeline.
 
@@ -51,26 +84,11 @@ Running tests for pipeline Kafka2KafkaPipeline.
     └ Outputs:              [b'FOO'] ✔
 
 All tests passed for Kafka2KafkaPipeline.
-
-
-Running tests for pipeline auto_pipeline_1.
-
-    ┌ Testing event:        b'{"foo":"aaa"}'
-    └ Outputs:              [b'{"foo": "A   A   A"}'] ✔
-
-    ┌ Testing event:        b'{"foo":"aab"}'
-    │ Probing after-upper.
-    └ Outputs:              [b'{"foo": "B   A   A"}'] ✔
-
-    ┌ Testing event:        b'{"foo":"cab"}'
-    └ Outputs:              [b'{"foo": "B   A   C"}'] ✘
 ```
 
-You can combine `--test` with `--watch` to automatically rerun tests whenever the source files change.
+Combine `--test` with `--watch` to auto-rerun tests on changes.
 
+## License
 
-Licence
--------
-
-Bitswan is open-source software, available under BSD 3-Clause License.
+BitSwan is open-source software, available under BSD 3-Clause License.
 
