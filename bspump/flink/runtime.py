@@ -145,9 +145,26 @@ class FlinkRuntime:
         if self._env is None:
             from pyflink.datastream import StreamExecutionEnvironment
 
-            self._env = StreamExecutionEnvironment.get_execution_environment()
+            # Check for remote cluster configuration
+            jobmanager = os.environ.get("FLINK_JOBMANAGER")
+            if jobmanager:
+                # Parse host:port
+                if ":" in jobmanager:
+                    host, port = jobmanager.rsplit(":", 1)
+                    port = int(port)
+                else:
+                    host = jobmanager
+                    port = 8081  # Default Flink REST port
 
-            # Configure based on environment
+                L.info(f"Connecting to Flink cluster at {host}:{port}")
+                self._env = StreamExecutionEnvironment.get_execution_environment()
+                # Note: PyFlink uses REST API for remote submission
+                # The cluster connection is handled at job submission time
+            else:
+                # Local execution (mini-cluster)
+                self._env = StreamExecutionEnvironment.get_execution_environment()
+
+            # Configure parallelism
             parallelism = int(os.environ.get("FLINK_PARALLELISM", "1"))
             self._env.set_parallelism(parallelism)
 

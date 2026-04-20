@@ -4,12 +4,10 @@ CLI entry point for Flink job submission.
 Compiles a BitSwan notebook and submits it as a Flink job.
 
 Usage:
-    BITSWAN_RUNTIME=flink bitswan-flink examples/Kafka2Kafka/main.ipynb
-
-Or with environment variables:
-    BITSWAN_RUNTIME=flink \\
-    FLINK_JOBMANAGER=jobmanager:8081 \\
     bitswan-flink examples/Kafka2Kafka/main.ipynb
+
+    # With explicit Flink cluster
+    bitswan-flink --flink-cluster jobmanager:8081 notebook.ipynb
 """
 
 import argparse
@@ -45,24 +43,34 @@ def compile_notebook(notebook_path: str, output_path: str) -> None:
     L.info(f"Compiled notebook to {output_path}")
 
 
-def setup_flink_environment() -> None:
-    """Set up the Flink runtime environment."""
-    # Ensure BITSWAN_RUNTIME is set
-    os.environ.setdefault("BITSWAN_RUNTIME", "flink")
+def setup_flink_environment(flink_cluster: str = None) -> None:
+    """Set up the Flink runtime environment.
 
-    # Set default Flink configuration
-    if "FLINK_HOME" not in os.environ:
-        L.warning("FLINK_HOME not set, using system PyFlink")
+    Args:
+        flink_cluster: Flink JobManager address (host:port)
+    """
+    # Always use flink runtime when running bitswan-flink
+    os.environ["BITSWAN_RUNTIME"] = "flink"
+
+    # Set Flink cluster if specified
+    if flink_cluster:
+        os.environ["FLINK_JOBMANAGER"] = flink_cluster
+        L.info(f"Using Flink cluster at {flink_cluster}")
 
 
-def run_flink_job(notebook_path: str, config_path: str = None) -> None:
+def run_flink_job(
+    notebook_path: str,
+    config_path: str = None,
+    flink_cluster: str = None,
+) -> None:
     """Compile and run a notebook as a Flink job.
 
     Args:
         notebook_path: Path to the .ipynb file
         config_path: Optional path to pipelines.conf (defaults to same dir as notebook)
+        flink_cluster: Flink JobManager address (host:port)
     """
-    setup_flink_environment()
+    setup_flink_environment(flink_cluster)
 
     # Determine config path
     if config_path is None:
@@ -112,19 +120,17 @@ def main() -> None:
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-  # Run with Flink runtime
-  BITSWAN_RUNTIME=flink bitswan-flink examples/Kafka2Kafka/main.ipynb
+  # Run locally (PyFlink mini-cluster)
+  bitswan-flink examples/Kafka2Kafka/main.ipynb
+
+  # Submit to Flink cluster
+  bitswan-flink --flink-cluster jobmanager:8081 notebook.ipynb
 
   # With explicit config file
-  bitswan-flink examples/Kafka2Kafka/main.ipynb -c /path/to/pipelines.conf
-
-  # With Flink cluster
-  FLINK_JOBMANAGER=jobmanager:8081 bitswan-flink notebook.ipynb
+  bitswan-flink -c /path/to/pipelines.conf notebook.ipynb
 
 Environment Variables:
-  BITSWAN_RUNTIME   Runtime to use (flink, bspump, jupyter)
-  FLINK_HOME        Path to Flink installation
-  FLINK_JOBMANAGER  Flink JobManager address (host:port)
+  FLINK_JOBMANAGER  Flink JobManager address (host:port) - same as --flink-cluster
   FLINK_PARALLELISM Flink job parallelism (default: 1)
         """,
     )
@@ -132,6 +138,12 @@ Environment Variables:
     parser.add_argument(
         "notebook",
         help="Path to the Jupyter notebook (.ipynb) to run",
+    )
+    parser.add_argument(
+        "-f",
+        "--flink-cluster",
+        metavar="HOST:PORT",
+        help="Flink JobManager address (e.g., jobmanager:8081)",
     )
     parser.add_argument(
         "-c",
@@ -154,8 +166,11 @@ Environment Variables:
         L.error(f"Notebook not found: {args.notebook}")
         sys.exit(1)
 
+    # Use CLI arg or fall back to env var
+    flink_cluster = args.flink_cluster or os.environ.get("FLINK_JOBMANAGER")
+
     try:
-        run_flink_job(args.notebook, args.config)
+        run_flink_job(args.notebook, args.config, flink_cluster)
     except ImportError as e:
         if "pyflink" in str(e).lower():
             L.error(
