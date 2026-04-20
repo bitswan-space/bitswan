@@ -72,10 +72,15 @@ flink = [
     "apache-flink>=1.17",
     "cloudpickle>=2.0.0",
 ]
+spark = [
+    "pyspark>=3.5",
+    "cloudpickle>=2.0.0",
+]
 
 [project.scripts]
 bitswan-notebook = "bspump.main:main"
 bitswan-flink = "bspump.flink.cli:main"
+bitswan-spark = "bspump.spark.cli:main"
 
 
 [tool.ruff]

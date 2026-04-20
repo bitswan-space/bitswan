@@ -13,6 +13,7 @@ BitSwan4Stream pipelines can be deployed to:
 
 - **BitSwan Automation Server** - Managed deployment with monitoring and scheduling
 - **Apache Flink** - Distributed stream processing on Flink clusters
+- **Apache Spark** - Spark Structured Streaming for batch and streaming
 
 ## Installation
 
@@ -28,6 +29,11 @@ uv pip install -e ".[dev]"
 For Flink support:
 ```bash
 uv pip install -e ".[flink]"
+```
+
+For Spark support:
+```bash
+uv pip install -e ".[spark]"
 ```
 
 ## Running Pipelines
@@ -58,6 +64,30 @@ Submit to a Flink cluster:
 
 ```bash
 bitswan-flink --flink-cluster jobmanager:8081 examples/Kafka2Kafka/main.ipynb
+```
+
+### Deploy to Apache Spark
+
+Run on a local Spark instance:
+
+```bash
+bitswan-spark examples/Kafka2Kafka/main.ipynb
+```
+
+Run with specific trigger mode:
+
+```bash
+# Process all available data and stop
+bitswan-spark --trigger once examples/Kafka2Kafka/main.ipynb
+
+# Process with 5-second micro-batches
+bitswan-spark --trigger "5 seconds" examples/Kafka2Kafka/main.ipynb
+```
+
+Submit to a Spark cluster:
+
+```bash
+bitswan-spark --master spark://master:7077 examples/Kafka2Kafka/main.ipynb
 ```
 
 ## Example Automations
