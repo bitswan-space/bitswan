@@ -84,6 +84,19 @@ Running tests for pipeline Kafka2KafkaPipeline.
     └ Outputs:              [b'FOO'] ✔
 
 All tests passed for Kafka2KafkaPipeline.
+
+
+Running tests for pipeline auto_pipeline_1.
+
+    ┌ Testing event:        b'{"foo":"aaa"}'
+    └ Outputs:              [b'{"foo": "A   A   A"}'] ✔
+
+    ┌ Testing event:        b'{"foo":"aab"}'
+    │ Probing after-upper.
+    └ Outputs:              [b'{"foo": "B   A   A"}'] ✔
+
+    ┌ Testing event:        b'{"foo":"cab"}'
+    └ Outputs:              [b'{"foo": "B   A   C"}'] ✘
 ```
 
 Combine `--test` with `--watch` to auto-rerun tests on changes.
