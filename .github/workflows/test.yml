@@ -86,8 +86,8 @@ jobs:
           echo "Waiting for Kafka to be ready..."
           sleep 10
           python -c "
-          import confluent_kafka
-          admin = confluent_kafka.admin.AdminClient({'bootstrap.servers': 'localhost:9092'})
+          from confluent_kafka.admin import AdminClient
+          admin = AdminClient({'bootstrap.servers': 'localhost:9092'})
           admin.list_topics(timeout=30)
           print('Kafka is ready')
           "

@@ -155,7 +155,7 @@ class FlinkRuntime:
             kafka_jars = os.environ.get("FLINK_KAFKA_JARS")
             if kafka_jars:
                 self._env.add_jars(*kafka_jars.split(";"))
-                L.info(f"Added Kafka JARs to Flink environment")
+                L.info("Added Kafka JARs to Flink environment")
 
         return self._env
 
