@@ -1,0 +1,45 @@
+# BitSwan Spark Test Container
+# Contains PySpark, Java, and all dependencies needed for e2e testing
+
+FROM python:3.11-bookworm
+
+# Install Java and other dependencies
+RUN apt-get update && apt-get install -y \
+    default-jdk-headless \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set JAVA_HOME
+ENV JAVA_HOME=/usr/lib/jvm/default-java
+
+# Set up working directory
+WORKDIR /app
+
+# Copy requirements first for caching
+COPY pyproject.toml /app/
+
+# Install Python dependencies
+RUN pip install --no-cache-dir \
+    pyspark>=3.5 \
+    cloudpickle \
+    confluent-kafka \
+    pytest \
+    numpy \
+    pandas
+
+# Copy the bitswan package and required files
+COPY bspump /app/bspump
+COPY test /app/test
+COPY pyproject.toml /app/
+COPY LICENSE /app/
+COPY README.md /app/
+
+# Install bitswan
+RUN pip install .
+
+# Set environment variables
+ENV BITSWAN_RUNTIME=spark
+ENV PYTHONUNBUFFERED=1
+
+# Default command runs the e2e test
+CMD ["python", "test/kafka/test_kafka2kafka_spark_e2e.py"]
