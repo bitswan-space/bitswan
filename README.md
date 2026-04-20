@@ -90,5 +90,5 @@ Combine `--test` with `--watch` to auto-rerun tests on changes.
 
 ## License
 
-BitSwan is open-source software, available under BSD 3-Clause License.
+The bspump library is open-source software, available under the BSD 3-Clause License.
 
