@@ -3,7 +3,7 @@ FROM golang:1.23-alpine
 RUN go install github.com/air-verse/air@v1.61.7
 
 WORKDIR /deps
-COPY go.mod go.sum ./
+COPY go.mod ./
 RUN go mod download
 
 WORKDIR /app

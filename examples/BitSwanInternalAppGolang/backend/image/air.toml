@@ -2,7 +2,7 @@ root = "/app"
 tmp_dir = "/tmp/air"
 
 [build]
-  cmd = "go build -o /tmp/air/server ."
+  cmd = "go build -modfile=/deps/go.mod -o /tmp/air/server ."
   bin = "/tmp/air/server"
   include_ext = ["go", "toml"]
   exclude_dir = ["image"]

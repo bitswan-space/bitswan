@@ -1,49 +1,28 @@
 #!/bin/sh
 set -e
 
-ln -sf /deps/node_modules /app/node_modules
-ln -sf /deps/package.json /app/package.json
+# BitSwan workspace metadata is exposed to the React app via Vite's
+# `import.meta.env.VITE_*` mechanism. Vite picks up env vars whose name
+# starts with VITE_ and inlines them into the bundle (production) or
+# serves them via `import.meta.env` (dev). The app reads them in src/api.ts.
+export VITE_BITSWAN_WORKSPACE_NAME="${BITSWAN_WORKSPACE_NAME}"
+export VITE_BITSWAN_DEPLOYMENT_ID="${BITSWAN_DEPLOYMENT_ID}"
+export VITE_BITSWAN_AUTOMATION_STAGE="${BITSWAN_AUTOMATION_STAGE}"
+export VITE_BITSWAN_GITOPS_DOMAIN="${BITSWAN_GITOPS_DOMAIN}"
+export VITE_BITSWAN_URL_TEMPLATE="${BITSWAN_URL_TEMPLATE}"
 
-# Config content for frontend
-CONFIG_CONTENT="window.__BITSWAN_CONFIG__ = {
-  workspaceName: \"${BITSWAN_WORKSPACE_NAME}\",
-  deploymentId: \"${BITSWAN_DEPLOYMENT_ID}\",
-  stage: \"${BITSWAN_AUTOMATION_STAGE}\",
-  domain: \"${BITSWAN_GITOPS_DOMAIN}\",
-  urlTemplate: \"${BITSWAN_URL_TEMPLATE}\"
-};"
+# Source is bind-mounted at /app. It contains committed symlinks
+# `package.json` → `/deps/package.json` and `node_modules` → `/deps/node_modules`
+# so Vite finds dependencies in the image's writable layer without anything
+# being created at runtime (the source mount is read-only in live-dev).
+cd /app
 
-# Live dev mode: run Vite dev server with hot reload
 if [ "$BITSWAN_AUTOMATION_STAGE" = "live-dev" ]; then
   echo "Starting in live-dev mode with hot reload..."
-
-  # Ensure public directory exists (may not exist if source is mounted directly)
-  mkdir -p /app/public
-
-  # Write config to public directory for Vite dev server
-  echo "$CONFIG_CONTENT" > /app/public/config.js
-
-  # Create vite config that allows hosts from the domain env var
-  cat > /app/vite.config.live-dev.js << EOF
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
-
-export default defineConfig({
-  plugins: [react()],
-  server: {
-    allowedHosts: ['.${BITSWAN_GITOPS_DOMAIN}'],
-  },
-})
-EOF
-
-  # Run Vite dev server with live-dev config
-  exec npm run dev -- --config vite.config.live-dev.js --host 0.0.0.0 --port 8080
+  exec npx vite --host 0.0.0.0 --port 8080
 fi
 
-# Production mode: build and serve static files
-npm run build
-
-# Write config to dist directory for production
-echo "$CONFIG_CONTENT" > dist/config.js
-
-exec serve -s dist -l 8080
+# Production: build into /tmp/dist (writable) and serve.
+echo "Building production bundle..."
+npx vite build --outDir /tmp/dist --emptyOutDir
+exec serve -s /tmp/dist -l 8080

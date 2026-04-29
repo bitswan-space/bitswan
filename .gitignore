@@ -119,3 +119,5 @@ doc/_build
 # Node
 node_modules
 
+# Unignore node_modules symlinks for the examples
+!examples/*/*/node_modules
