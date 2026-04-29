@@ -15,14 +15,21 @@ export VITE_BITSWAN_URL_TEMPLATE="${BITSWAN_URL_TEMPLATE}"
 # `package.json` → `/deps/package.json` and `node_modules` → `/deps/node_modules`
 # so Vite finds dependencies in the image's writable layer without anything
 # being created at runtime (the source mount is read-only in live-dev).
+#
+# Vite bundles every config file through esbuild and writes the result
+# (`<config>.timestamp-….mjs`) next to the original before evaluating it.
+# Pointing Vite at a copy of the config inside /tmp keeps that temp file
+# off the read-only source mount.
+cp /app/vite.config.mjs /tmp/vite.config.mjs
+
 cd /app
 
 if [ "$BITSWAN_AUTOMATION_STAGE" = "live-dev" ]; then
   echo "Starting in live-dev mode with hot reload..."
-  exec npx vite --host 0.0.0.0 --port 8080
+  exec npx vite --config /tmp/vite.config.mjs --host 0.0.0.0 --port 8080
 fi
 
 # Production: build into /tmp/dist (writable) and serve.
 echo "Building production bundle..."
-npx vite build --outDir /tmp/dist --emptyOutDir
+npx vite build --config /tmp/vite.config.mjs --outDir /tmp/dist --emptyOutDir
 exec serve -s /tmp/dist -l 8080
