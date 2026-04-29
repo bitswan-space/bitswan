@@ -1,11 +1,5 @@
 // BitSwan API client for the external app (no authentication required)
 
-declare global {
-  interface Window {
-    __BITSWAN_CONFIG__?: BitswanConfig | null
-  }
-}
-
 interface BitswanConfig {
   workspaceName?: string
   deploymentId?: string
@@ -14,7 +8,15 @@ interface BitswanConfig {
   urlTemplate?: string
 }
 
-const getConfig = (): BitswanConfig => window.__BITSWAN_CONFIG__ || {}
+// Workspace metadata is exposed to the bundle as `VITE_BITSWAN_*` env vars
+// (set by the container entrypoint and inlined by Vite at build time).
+const getConfig = (): BitswanConfig => ({
+  workspaceName: import.meta.env.VITE_BITSWAN_WORKSPACE_NAME,
+  deploymentId: import.meta.env.VITE_BITSWAN_DEPLOYMENT_ID,
+  stage: import.meta.env.VITE_BITSWAN_AUTOMATION_STAGE,
+  domain: import.meta.env.VITE_BITSWAN_GITOPS_DOMAIN,
+  urlTemplate: import.meta.env.VITE_BITSWAN_URL_TEMPLATE,
+})
 
 // Build URL for a named automation using the URL template.
 // BITSWAN_URL_TEMPLATE looks like: https://editor-sandbox-{name}-live-dev.sandbox.bitswan.ai
