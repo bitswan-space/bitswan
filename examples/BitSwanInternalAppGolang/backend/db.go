@@ -31,9 +31,34 @@ func mustInitDB() *gorm.DB {
 	}
 	sqlDB.SetMaxOpenConns(5)
 
-	// Auto-migrate tables.
-	if err := db.AutoMigrate(&models.UserCounter{}, &models.GalleryImage{}); err != nil {
+	if err := db.AutoMigrate(&models.UserCounter{}); err != nil {
 		log.Fatalf("failed to migrate database: %v", err)
+	}
+
+	// gallery_images is managed via raw idempotent DDL rather than
+	// AutoMigrate. GORM's column-diff path keeps emitting an unconditional
+	// `DROP CONSTRAINT uni_gallery_images_key` whenever it thinks the
+	// column previously had a unique constraint, which aborts the whole
+	// migration on databases where that constraint name never existed
+	// (SQLSTATE 42704). Plain CREATE-IF-NOT-EXISTS sidesteps that.
+	const galleryImagesDDL = `
+	CREATE TABLE IF NOT EXISTS gallery_images (
+		id           BIGSERIAL    PRIMARY KEY,
+		key          TEXT         NOT NULL,
+		title        TEXT         NOT NULL,
+		content_type TEXT         NOT NULL,
+		size         BIGINT       NOT NULL,
+		uploaded_by  TEXT         NOT NULL,
+		created_at   TIMESTAMPTZ  NOT NULL DEFAULT now()
+	)`
+	if err := db.Exec(galleryImagesDDL).Error; err != nil {
+		log.Fatalf("failed to create gallery_images table: %v", err)
+	}
+	// Drop any leftover constraint/index from prior half-migrated states so
+	// the table converges on a single uniqueness mechanism we control.
+	db.Exec(`ALTER TABLE gallery_images DROP CONSTRAINT IF EXISTS uni_gallery_images_key`)
+	if err := db.Exec(`CREATE UNIQUE INDEX IF NOT EXISTS idx_gallery_images_key ON gallery_images (key)`).Error; err != nil {
+		log.Fatalf("failed to create gallery_images key index: %v", err)
 	}
 
 	return db
