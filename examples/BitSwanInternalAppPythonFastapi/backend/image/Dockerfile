@@ -1,5 +1,7 @@
 FROM python:3.12-slim
 
+ENV PYTHONPYCACHEPREFIX=/tmp/pycache
+
 WORKDIR /deps
 
 COPY requirements.txt ./
