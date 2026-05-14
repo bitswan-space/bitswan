@@ -11,7 +11,7 @@ L = logging.getLogger(__name__)
 
 class AttributeFilter(Processor):
     """
-    This is processor implenting a simple attribute filter.
+    This is processor implementing a simple attribute filter.
     If 'inclusive' is False, all fields from event matching with lookup will be deleted,
     otherwise all fields not from lookup will be deleted from event.
     """

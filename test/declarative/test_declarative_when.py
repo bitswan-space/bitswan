@@ -27,7 +27,7 @@ class TestDeclarativeWhen(bspump.unittest.TestCase):
     def test_when_01_range(self):
         decl = self.load("./test_when.yaml")
         res = decl({}, {"key": 45})
-        self.assertEqual(res, "fourty to fifty (exclusive)")
+        self.assertEqual(res, "forty to fifty (exclusive)")
 
     def test_when_01_set(self):
         decl = self.load("./test_when.yaml")

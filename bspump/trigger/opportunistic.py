@@ -4,7 +4,7 @@ from .trigger import Trigger
 class OpportunisticTrigger(Trigger):
     """
     This trigger tries to trigger the pump as frequenty as possible.
-    It triggers immediatelly when possible, after each Source report completed cycle and in 5 sec. period (see chilldown period)
+    It triggers immediately when possible, after each Source report completed cycle and in 5 sec. period (see chilldown period)
     """
 
     def __init__(self, app, id=None, run_immediately=True, chilldown_period=5):

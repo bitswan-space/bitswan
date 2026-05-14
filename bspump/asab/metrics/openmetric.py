@@ -1,6 +1,6 @@
 import re
 
-# HOW TO FULLFIL OPEMETRICS STANDARD
+# HOW TO FULFILL OPENMETRICS STANDARD
 
 # Metrics SHOULD have "unit" and "help" Tags
 # Help is a string and SHOULD be non-empty. It is used to give a brief description of the MetricFamily for human consumption and SHOULD be short enough to be used as a tooltip.

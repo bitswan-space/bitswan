@@ -5,7 +5,7 @@ from .value.valueexpr import VALUE
 
 class AND(SequenceExpression):
     """
-    Checks if all expressions are true, respectivelly, stop on the first False
+    Checks if all expressions are true, respectively, stop on the first False
     """
 
     Attributes = {"Items": ["bool"]}

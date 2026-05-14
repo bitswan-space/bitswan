@@ -413,7 +413,7 @@ class StructuredDataFormatter(logging.Formatter):
 def _loop_exception_handler(loop, context):
     """
     This is an logging exception handler for asyncio.
-    It's purpose is to nicely log any unhandled excpetion that arises in the asyncio tasks.
+    It's purpose is to nicely log any unhandled exception that arises in the asyncio tasks.
     """
 
     exception = context.pop("exception", None)

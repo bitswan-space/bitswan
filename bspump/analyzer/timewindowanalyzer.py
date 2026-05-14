@@ -13,7 +13,7 @@ L = logging.getLogger(__name__)
 class TimeWindowAnalyzer(Analyzer):
     """
     This is the analyzer for events with a temporal dimension (aka timestamp).
-    Configurable sliding window records events withing specified windows and implements functions to find the exact time slot.
+    Configurable sliding window records events within specified windows and implements functions to find the exact time slot.
     Timer periodically shifts the window by time window resolution, dropping previous events.
 
     `TimeWindowAnalyzer` operates over the `TimeWindowMatrix` object.
@@ -23,10 +23,10 @@ class TimeWindowAnalyzer(Analyzer):
     `clock_driven` is a boolean parameter, specifying how the matrix should be advanced. If `True`, it advances on timer's tick,
     else manually. Default value is `True`.
     `matrix_id` is an id of `TimeWindowMatrix` object alternatively passed, if not provided, the new matrix will be created with and ID derived from the Analyzer Id
-    `analyze_on_clock` enables enables analyzis by timer.
+    `analyze_on_clock` enables enables analysis by timer.
 
     If the `TimeWindowAnalyzer` is `clock_driven`, the time should be periodically shifted (`on_clock_tick()`). The same
-    function runs analyzis, if it's enabled.
+    function runs analysis, if it's enabled.
     """
 
     def __init__(

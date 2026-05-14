@@ -17,7 +17,7 @@ class Matrix(abc.ABC, Configurable):
     """
     Generic `Matrix` object.
 
-    Matrix structure is organized in a following hiearchical order:
+    Matrix structure is organized in a following hierarchical order:
 
     Matrix -> Rows -> Columns -> Cells
 
@@ -152,14 +152,14 @@ class Matrix(abc.ABC, Configurable):
         """
         The `Matrix` itself can run the `analyze()`.
         It is not recommended to iterate through the matrix row by row (or cell by cell).
-        Instead use numpy fuctions. Examples:
-        1. You have a vector with n rows. You need only those row indeces, where the cell content is more than 10.
+        Instead use numpy functions. Examples:
+        1. You have a vector with n rows. You need only those row indices, where the cell content is more than 10.
         Use `np.where(vector > 10)`.
         2. You have a matrix with n rows and m columns. You need to find out which rows
         fully consist of zeros. use `np.where(np.all(matrix == 0, axis=1))` to get those row indexes.
         Instead `np.all()` you can use `np.any()` to get all row indexes, where there is at least one zero.
         3. Use `np.mean(matrix, axis=1)` to get means for all rows.
-        4. Usefull numpy functions: `np.unique()`, `np.sum()`, `np.argmin()`, `np.argmax()`.
+        4. Useful numpy functions: `np.unique()`, `np.sum()`, `np.argmin()`, `np.argmax()`.
         """
         pass
 

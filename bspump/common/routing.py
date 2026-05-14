@@ -101,7 +101,7 @@ class InternalSource(Source):
 
         If you are getting a `asyncio.queues.QueueFull` exception,
         you likely did not implemented backpressure handling.
-        The simpliest approach is to use RouterSink / RouterProcessor.
+        The simplest approach is to use RouterSink / RouterProcessor.
 
         |
 

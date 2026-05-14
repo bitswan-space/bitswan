@@ -11,7 +11,7 @@ L = logging.getLogger(__name__)
 
 class GoogleDriveABCSink(Sink):
     """
-    GoogleDriveABCSink is abstract class ment to be used for uploading files to GoogleDrive.
+    GoogleDriveABCSink is abstract class meant to be used for uploading files to GoogleDrive.
     """
 
     def __init__(self, app, pipeline, connection, id=None, config=None):

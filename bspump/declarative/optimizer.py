@@ -50,7 +50,7 @@ class ExpressionOptimizer(object):
 
                 if counter > 100000:
                     raise RuntimeError(
-                        "Optimization likely stucked at '{}'-'{}'-'{}'/'{}'".format(
+                        "Optimization likely stuck at '{}'-'{}'-'{}'/'{}'".format(
                             parent, key, obj, opt_obj
                         )
                     )

@@ -101,7 +101,7 @@ class Analyzer(Processor):
 
     async def on_clock_tick(self):
         """
-        Run analyzis every tick.
+        Run analysis every tick.
 
         """
         t0 = time.perf_counter()

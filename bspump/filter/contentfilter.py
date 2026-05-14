@@ -13,7 +13,7 @@ L = logging.getLogger(__name__)
 
 class ContentFilter(Processor):
     """
-    This is processor implenting a simple attribute filter.
+    This is processor implementing a simple attribute filter.
     The query is constructed in mongodb manner.
     NB:
     Only the "/pattern/<options>" syntax is supported for $regex.
@@ -42,14 +42,14 @@ class ContentFilter(Processor):
 
     def on_hit(self, context, event):
         """
-        This function tranforms the event, if it
+        This function transforms the event, if it
         matched the query.
         """
         return event
 
     def on_miss(self, context, event):
         """
-        This function tranforms the event, if it did not
+        This function transforms the event, if it did not
         matched the query.
         """
         return event

@@ -39,7 +39,7 @@ class SessionAnalyzer(Analyzer):
             +------------+------------------+
 
     Example: 'i8' stands for int64.
-    Important! However it is possible to use all these letters, it is recommeded to use only 'i' for integers, 'f' for
+    Important! However it is possible to use all these letters, it is recommended to use only 'i' for integers, 'f' for
     floats, 'U' for strings. Anything else might cause problems in serialization.
     It is possible to create a matrix with elements of specified format. The tuple with number of dimensions should
     stand before the letter.
@@ -77,9 +77,9 @@ class SessionAnalyzer(Analyzer):
 
         analyze_on_clock : bool, default = False
 
-        persistent : bool, defualt = False
+        persistent : bool, default = False
 
-        id : str, defualt = None
+        id : str, default = None
 
         config : JSON, default = None
                 configuration file with additional information.

@@ -20,12 +20,12 @@ class GoogleDriveConnection(Connection):
     This connection is synchronous and therefore all connectors using it
     are blocking.
 
-    To aquire service_account_file, you will need to go to console.developers.google.com and create service account.
+    To acquire service_account_file, you will need to go to console.developers.google.com and create service account.
     Create a private key for your service account and download json private key file.
     The process is well documented here https://developers.google.com/identity/protocols/OAuth2ServiceAccount .
     Then it is necessary to delegate authority over a client account to created
     service account. You can do it in admin console: https://admin.google.com/
-    For more details refere to the link above.
+    For more details refer to the link above.
 
     For the delegation, G Suite domain administrator console is necessary.
     Free Google accounts can't be used as target of Google Drive connection.

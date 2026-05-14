@@ -65,7 +65,7 @@ class FTPSource(TriggerSource):
         if self.Queue.qsize() == 0:
             self.list_future = None
 
-        # conenct to the client
+        # connect to the client
         self.client = await self.Connection.connect()
 
         # if the filename is specified then add only filename to queue else add the

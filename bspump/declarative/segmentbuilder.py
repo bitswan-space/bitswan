@@ -86,7 +86,7 @@ class SegmentBuilder(object):
     def register_processor(self, processor_keyword, _module, _class):
         """
         Registers custom processors that are translated to module & class.
-        The default keywords may also be overriden.
+        The default keywords may also be overridden.
         """
         self.PROCESSORS[processor_keyword] = (_module, _class)
 

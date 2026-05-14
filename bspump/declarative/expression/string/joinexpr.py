@@ -71,7 +71,7 @@ class JOIN(Expression):
 
         except Exception as e:
             L.exception(
-                "The following exception ocurred in !JOIN expression [delimiter: {}]".format(
+                "The following exception occurred in !JOIN expression [delimiter: {}]".format(
                     self.Char
                 )
             )

@@ -1,7 +1,7 @@
 from pymysql.converters import encoders as convertors
 import numpy as np
 
-""" Those methods extends pymysql convertor for numpy datatypes """
+""" Those methods extends pymysql converter for numpy datatypes """
 
 
 def convert_numpy_int(value, mapping=None):

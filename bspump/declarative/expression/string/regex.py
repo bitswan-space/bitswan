@@ -46,7 +46,7 @@ class REGEX(Expression):
 
 class REGEX_PARSE(Expression):
     """
-    Search `value` forr `regex` with regular expressions groups.
+    Search `value` for `regex` with regular expressions groups.
     If nothing is found `miss` is returned.
     Otherwise, groups are returned in as a list.
 

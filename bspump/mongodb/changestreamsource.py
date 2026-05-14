@@ -65,7 +65,7 @@ class MongoDBChangeStreamSource(Source):
 
             except asyncio.CancelledError as e:
                 L.warning(
-                    f"Mongo change stream task cancled or timed out: {e}. Restarting connection."
+                    f"Mongo change stream task canceled or timed out: {e}. Restarting connection."
                 )
                 return await self.main()
             except pymongo.errors.OperationFailure as e:

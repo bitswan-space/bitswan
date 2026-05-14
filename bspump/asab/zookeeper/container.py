@@ -106,7 +106,7 @@ class ZooKeeperContainer(Configurable):
 
         self.Path = url_path
 
-        self.Advertisments = dict()
+        self.Advertisements = dict()
         self.DataWatchers = set()
         self.App.PubSub.subscribe("Application.tick/300!", self._readvertise)
 
@@ -167,14 +167,14 @@ class ZooKeeperContainer(Configurable):
     # Advertisement into Zookeeper
 
     def advertise(self, data, path):
-        adv = self.Advertisments.get(self.Path + path)
+        adv = self.Advertisements.get(self.Path + path)
         if adv is None:
             adv = ZooKeeperAdvertisement(self.Path + path)
-            self.Advertisments[self.Path + path] = adv
+            self.Advertisements[self.Path + path] = adv
         self.App.TaskService.schedule(adv._set_data(self, data))
 
     async def _readvertise(self, *args):
-        for adv in self.Advertisments.values():
+        for adv in self.Advertisements.values():
             await adv._readvertise(self)
 
     # Reading

@@ -40,7 +40,7 @@ class InfluxDBConnection(Connection):
 
             output_bucket_max_size : 1000 * 1000
 
-            timout : 30
+            timeout : 30
 
             retry_enabled : False
 
@@ -191,7 +191,7 @@ class InfluxDBConnection(Connection):
                             and self.RetryEnabled
                         ):
                             L.warning(
-                                f"Retryable response code recieved, retrying. Queue size {self._output_queue.qsize()}"
+                                f"Retryable response code received, retrying. Queue size {self._output_queue.qsize()}"
                             )
                             self._output_queue.put_nowait(_output_bucket)
                             self.PubSub.publish("InfluxDBConnection.pause!", self)

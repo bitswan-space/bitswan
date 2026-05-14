@@ -198,7 +198,7 @@ class GitLibraryProvider(FileSystemLibraryProvider):
         if new_commit_id == self.GitRepository.head.target:
             return []
 
-        # Before new head is set, check the diffs. If changes in subscribed directory occured, add path to "to_publish" list.
+        # Before new head is set, check the diffs. If changes in subscribed directory occurred, add path to "to_publish" list.
         to_publish = []
         for path in self.SubscribedPaths:
             for i in self.GitRepository.diff(

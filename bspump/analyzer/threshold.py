@@ -22,11 +22,11 @@ class ThresholdAnalyzer(TimeWindowAnalyzer):
             evaluate method - Take event attributes and sorts them into the matrix
 
             analyze method - Check whether any value in the matrix is over the preconfigured bounds and if so, check the
-                                            occurrance of the symptom in the array and then possibly call the alarm.
+                                            occurrence of the symptom in the array and then possibly call the alarm.
                                             To analyze, whether the values are out of bounds, the 'np.where()' method is used. It pass the
                                             position of values out of bounds within the matrix to the alarm method.
                                             x = row position, y = column position
-                                            To detect whether the symptom occurrance of the 'values out of bounds' is higher or equal, than number
+                                            To detect whether the symptom occurrence of the 'values out of bounds' is higher or equal, than number
                                             set in the configuration, an aggregation is used. Result of aggregation is the number of occurrences
                                             and indices of those values. It is then passed to the alarm method together with x and y arrays.
 
@@ -176,7 +176,7 @@ class ThresholdAnalyzer(TimeWindowAnalyzer):
 
         # Symptom occurrence detection
         try:
-            # Setting previous value. When it is empty, further computation wont proceed.
+            # Setting previous value. When it is empty, further computation won't proceed.
             previous = x[0]
         except IndexError:
             return

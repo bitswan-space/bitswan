@@ -33,7 +33,7 @@ class KafkaSink(Sink):
 
             There are two ways to use KafkaSink:
             - Specify a single topic in KafkaSink config - topic, to be used for all the events in pipeline.
-            - Specify topic separetly for each event in event context - context['kafka_topic'].
+            - Specify topic separately for each event in event context - context['kafka_topic'].
                             Topic from configuration is than used as a default topic.
                             To provide business logic for event distribution, you can create topic selector processor.
             Processor example:
@@ -65,7 +65,7 @@ class KafkaSink(Sink):
         "watermark.low": "40000",
         "watermark.high": "90000",
         "batch.num.messages": "100000",
-        "linger.ms": "500",  # This settings makes a significant impact on the throughtput
+        "linger.ms": "500",  # This settings makes a significant impact on the throughput
         "batch.size": "1000000",
         "poll.timeout": "0.2",
         # "compression.type": "snappy",
