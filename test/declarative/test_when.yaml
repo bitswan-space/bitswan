@@ -16,7 +16,7 @@
     - !ITEM EVENT key
     - 50
   then:
-    "fourty to fifty (exclusive)"
+    "forty to fifty (exclusive)"
 
 # In-set match
 - test:

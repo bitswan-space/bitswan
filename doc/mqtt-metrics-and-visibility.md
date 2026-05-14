@@ -8,7 +8,7 @@ The MPIOP provides a set of MQTT topics which can be used to inspect (and in the
 Send `get` as the payload to:
 `c/{container_id}/topology/get`
 
-You will recieve the topology by subscribing to:
+You will receive the topology by subscribing to:
 
 `c/{container_id}/topology`
 
@@ -17,7 +17,7 @@ You will recieve the topology by subscribing to:
 Send `get` as the payload to:
 `c/{container_id}/c/{pipeline_id}/topology/get`
 
-You will recieve the topology by subscribing to:
+You will receive the topology by subscribing to:
 
 `c/{container_id}/c/{pipeline_id}/topology`
 

@@ -48,4 +48,4 @@ class MemcachedLookup(Lookup):
 
     def flush_all(self):
         self.Client.flush_all()
-        L.info("Chache flushed")
+        L.info("Cache flushed")

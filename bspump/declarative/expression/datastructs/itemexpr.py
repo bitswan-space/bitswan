@@ -91,11 +91,11 @@ class ITEM(Expression):
         return None
 
     def __call__(self, context, event, *args, **kwargs):
-        wth = self.With(context, event, *args, **kwargs)
+        with = self.With(context, event, *args, **kwargs)
         item = self.Item(context, event, *args, **kwargs)
 
         try:
-            return wth[item]
+            return with[item]
 
         except (KeyError, IndexError):
             if self.Default is None:

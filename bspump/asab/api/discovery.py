@@ -122,7 +122,7 @@ class DiscoveryService(Service):
         Usage:
 
         async with self.DiscoveryService.session() as session:
-                # use URL in format: <protocol>://<value>.<key>.asab/<endpoint> where key is "service_id" or "instance_id" and value the respective serivce identificator
+                # use URL in format: <protocol>://<value>.<key>.asab/<endpoint> where key is "service_id" or "instance_id" and value the respective service identificator
                 async with session.get("http://my_application_1.instance_id.asab/asab/v1/config") as resp:
                         ...
         """

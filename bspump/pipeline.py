@@ -390,7 +390,7 @@ class Pipeline(abc.ABC, bspump.asab.Configurable):
         who : ID of a :meth:`processor <bspump.Processor()>`.
                         Name of a :meth:`processor <bspump.Processor()>` that we want to throttle.
 
-        enable : bool, defualt True
+        enable : bool, default True
                         When True, content of argument 'who' is added to _throttles list.
 
 
@@ -989,7 +989,7 @@ class PipelineLogger(logging.Logger):
 
     def __init__(self, name, metrics_counter, level=logging.NOTSET):
         """
-        Itialize a metrics counter.
+        Initialize a metrics counter.
 
 
         """

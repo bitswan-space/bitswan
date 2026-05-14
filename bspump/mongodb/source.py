@@ -55,7 +55,7 @@ class MongoDBSource(TriggerSource):
         coll = db[self.Collection]
         await self.Pipeline.ready()
 
-        # query parms
+        # query params
         q_filter = self.QueryParms.get("filter", None)
         q_projection = self.QueryParms.get("projection", None)
         q_limit = self.QueryParms.get("limit", 0)

@@ -24,7 +24,7 @@ class Generator(ProcessorBase):
         id : str, default = None
                         ID
 
-        config : JSON, defualt = None
+        config : JSON, default = None
                         configuration file containing additional information.
 
         """

@@ -239,7 +239,7 @@ class FileABCSource(TriggerSource):
         finally:
             f.close()
 
-        L.debug("File '{}' processed {}".format(filename, "succefully"))
+        L.debug("File '{}' processed {}".format(filename, "successfully"))
 
         # Finalize
         try:

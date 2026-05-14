@@ -237,7 +237,7 @@ class AlertService(Service):
                 "asab:alert:sentry": SentryAlertProvider,
             }.get(section)
             if provider_cls is None:
-                L.warning("Unknwn alert provider: {}".format(section))
+                L.warning("Unknown alert provider: {}".format(section))
                 continue
 
             self.Providers.append(

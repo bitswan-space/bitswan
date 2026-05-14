@@ -185,7 +185,7 @@ class PostgreSQLConnection(Connection):
                 return None
             raise e
         except BaseException as e:
-            L.exception("Unexpected PostgresSQL connection error. %s" % e)
+            L.exception("Unexpected PostgreSQL connection error. %s" % e)
             raise
 
     def acquire(self) -> aiopg.pool._PoolConnectionContextManager:

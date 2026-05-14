@@ -722,7 +722,7 @@ class Application(metaclass=Singleton):
         This method ensures that any newly add module or registered service is initialized.
         It is called from:
         (1) init-time for modules&services added during application construction.
-        (2) run-time for modules&services added during aplication lifecycle.
+        (2) run-time for modules&services added during application lifecycle.
         """
 
         # Initialize modules

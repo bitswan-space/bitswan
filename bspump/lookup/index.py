@@ -30,7 +30,7 @@ class Index(object):
 class BitMapIndex(Index):
     def __init__(self, column, matrix, id=None):
         """
-        Make sure, that column values are discreet.
+        Make sure, that column values are discrete.
         Also the creation procedure is relatively slow.
         """
         super().__init__(id=id)

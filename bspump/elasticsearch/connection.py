@@ -85,7 +85,7 @@ class ElasticSearchBulk(object):
                         ?
 
         timeout : int
-                        uses timout value from config. Value of time for how long we want to be connected to ElasticSearch.
+                        uses timeout value from config. Value of time for how long we want to be connected to ElasticSearch.
 
         :return: ?
 
@@ -240,7 +240,7 @@ class ElasticSearchConnection(Connection):
                     ??
 
     timeout : int, default = 300
-                    Timout value.
+                    Timeout value.
 
     fail_log_max_size : int, default =  20
                     Maximum size of failed log messages.
@@ -455,7 +455,7 @@ class ElasticSearchConnection(Connection):
 
                 self._futures[i] = (url, None)
 
-            # 2) Start _loader() futures that are exitted
+            # 2) Start _loader() futures that are exited
             if self._started:
                 url, future = self._futures[i]
                 if future is None:
@@ -549,8 +549,8 @@ class ElasticSearchConnection(Connection):
                 if self._output_queue.qsize() == self._output_queue_max_size - 1:
                     self.PubSub.publish("ElasticSearchConnection.unpause!", self)
 
-                sucess = await bulk.upload(url, session, self._timeout)
-                if not sucess:
+                success = await bulk.upload(url, session, self._timeout)
+                if not success:
                     # Requeue the bulk for another delivery attempt to ES
                     self.enqueue(bulk)
                     await asyncio.sleep(5)  # Throttle a bit before next try

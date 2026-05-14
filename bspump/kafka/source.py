@@ -155,7 +155,7 @@ class KafkaSource(Source):
 
                     if m.error():
                         L.error(
-                            "The following error occured while polling for messages: '{}'.".format(
+                            "The following error occurred while polling for messages: '{}'.".format(
                                 m.error()
                             )
                         )

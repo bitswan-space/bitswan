@@ -316,7 +316,7 @@ class ExpressionBuilder(object):
                 value = float(node.value)
             else:
                 raise NotImplementedError(
-                    "Unsupport scalar type '{}'".format(outlet_type)
+                    "Unsupported scalar type '{}'".format(outlet_type)
                 )
             obj = VALUE(self.App, value=value, outlet_type=outlet_type)
 

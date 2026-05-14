@@ -14,8 +14,8 @@ L = logging.getLogger(__name__)
 class TimeDriftAnalyzer(Analyzer):
     """
     The analyzer, which shows how different is time of the stream from the current time.
-    The output of the analyzis is a metric with average time, median time, minimum time,
-    maximum time and a standart deviation.
+    The output of the analysis is a metric with average time, median time, minimum time,
+    maximum time and a standard deviation.
 
     **Default Config**
 

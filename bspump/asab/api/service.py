@@ -149,7 +149,7 @@ class ApiService(Service):
         ```
 
 
-        Intialize with a custom Zookeeper container:
+        Initialize with a custom Zookeeper container:
 
         ```
         zksvc = self.App.get_service("asab.ZooKeeperService")

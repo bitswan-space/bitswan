@@ -44,7 +44,7 @@ class CUT(Expression):
 
         except Exception as e:
             L.exception(
-                "The following exception ocurred in !CUT expression [delimiter: {}, field: {}]".format(
+                "The following exception occurred in !CUT expression [delimiter: {}, field: {}]".format(
                     self.Delimiter, self.Field
                 )
             )
