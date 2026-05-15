@@ -321,4 +321,32 @@ Key Points
 
 4. **Helper functions before auto_pipeline**: Define reusable functions in the setup section.
 
-5. **Set event = None to drop**: Return nothing or set ``event = None`` to filter out events.
+5. **Control event flow with exceptions**: Use ``raise SkipEvent()`` to drop events or ``raise FinalizeEvent(event)`` to send to sink immediately.
+
+Event Flow Control
+------------------
+
+BSPump provides special exceptions for cleaner event flow control:
+
+**SkipEvent** - Drop an event without further processing:
+
+.. code-block:: python
+
+    from bspump.jupyter import SkipEvent
+
+    if event.get("type") == "spam":
+        raise SkipEvent()  # Event is dropped, no output to sink
+
+    event["processed"] = True
+
+**FinalizeEvent** - Send event to sink immediately, skip remaining cells:
+
+.. code-block:: python
+
+    from bspump.jupyter import FinalizeEvent
+
+    if event.get("cached"):
+        raise FinalizeEvent(event)  # Sent to sink now
+
+    # This only runs for non-cached events
+    event["result"] = expensive_computation(event)

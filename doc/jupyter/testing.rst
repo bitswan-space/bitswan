@@ -134,6 +134,65 @@ For scheduled tasks or debugging, use ``PPrintSink`` to see output:
         name="DebugPipeline",
     )
 
+Controlling Event Flow
+----------------------
+
+BSPump provides two special exceptions for controlling event flow in your
+processing cells. These provide a cleaner alternative to ``event = None``
+and conditional logic.
+
+**SkipEvent** - Drop an event without processing it further:
+
+.. code-block:: python
+
+    from bspump.jupyter import SkipEvent
+
+    # Filter out unwanted events early
+    if event.get("type") == "spam":
+        raise SkipEvent()
+
+    # This code only runs for non-spam events
+    event["processed"] = True
+
+**FinalizeEvent** - Send an event to the sink immediately, skipping remaining cells:
+
+.. code-block:: python
+
+    from bspump.jupyter import FinalizeEvent
+
+    # Early exit for cached results
+    if event.get("cached"):
+        raise FinalizeEvent(event)
+
+    # This code only runs for non-cached events
+    event["result"] = expensive_computation(event)
+
+These exceptions are especially useful when you have multiple processing cells
+and want to exit early without complex conditional logic in every cell.
+
+Example: Filtering and Early Exit
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code-block:: python
+
+    # Cell 1: Validate and filter
+    if not event.get("required_field"):
+        print(f"Missing required field, dropping event")
+        raise SkipEvent()
+
+.. code-block:: python
+
+    # Cell 2: Check cache
+    cached_result = lookup_cache(event["id"])
+    if cached_result:
+        event["result"] = cached_result
+        raise FinalizeEvent(event)
+
+.. code-block:: python
+
+    # Cell 3: Expensive processing (only runs if not cached)
+    event["result"] = expensive_api_call(event)
+
 Error Handling
 --------------
 

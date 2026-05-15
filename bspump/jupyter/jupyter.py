@@ -5,6 +5,8 @@ import bspump
 import os
 from typing import Any, Callable, List
 
+from .exceptions import SkipEvent, FinalizeEvent
+
 # Define globals if not define already
 if "bitswan_auto_pipeline" not in globals():
     __bitswan_processors = []
@@ -519,7 +521,14 @@ def async_step(func):
             else:
                 return self.Pipeline.inject(context, event, depth)
 
-        return await func(injector, event)
+        try:
+            return await func(injector, event)
+        except SkipEvent:
+            # Event is dropped - do not call injector
+            return
+        except FinalizeEvent as e:
+            # Send the event to sink immediately, skip remaining processing
+            return await injector(e.event)
 
     CustomGenerator = type(
         class_name,

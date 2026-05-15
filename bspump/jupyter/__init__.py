@@ -22,6 +22,7 @@ from .jupyter import (
     bitswan_test_probes,
     bitswan_tested_pipelines,
 )
+from .exceptions import SkipEvent, FinalizeEvent
 
 __all__ = [
     "deploy",
@@ -46,4 +47,6 @@ __all__ = [
     "add_test_probe",
     "bitswan_test_probes",
     "bitswan_tested_pipelines",
+    "SkipEvent",
+    "FinalizeEvent",
 ]
