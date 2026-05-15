@@ -21,6 +21,7 @@ from .jupyter import (
     add_test_probe,
     bitswan_test_probes,
     bitswan_tested_pipelines,
+    detect_runtime,
 )
 
 __all__ = [
@@ -46,4 +47,5 @@ __all__ = [
     "add_test_probe",
     "bitswan_test_probes",
     "bitswan_tested_pipelines",
+    "detect_runtime",
 ]

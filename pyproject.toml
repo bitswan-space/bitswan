@@ -68,9 +68,14 @@ dev = [
 pyjq-support = [
     "pyjq>=2.6.0",
 ]
+flink = [
+    "apache-flink>=1.17",
+    "cloudpickle>=2.0.0",
+]
 
 [project.scripts]
 bitswan-notebook = "bspump.main:main"
+bitswan-flink = "bspump.flink.cli:main"
 
 
 [tool.ruff]

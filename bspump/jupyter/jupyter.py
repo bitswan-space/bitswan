@@ -5,6 +5,23 @@ import bspump
 import os
 from typing import Any, Callable, List
 
+
+def detect_runtime() -> str:
+    """Detect which runtime to use.
+
+    Checks BITSWAN_RUNTIME environment variable first,
+    then falls back to auto-detection.
+
+    Returns:
+        "flink", "jupyter", or "bspump"
+    """
+    runtime = os.environ.get("BITSWAN_RUNTIME")
+    if runtime:
+        return runtime.lower()
+
+    # Auto-detect Jupyter environment (checked below in is_running_in_jupyter)
+    return None  # Let is_running_in_jupyter decide
+
 # Define globals if not define already
 if "bitswan_auto_pipeline" not in globals():
     __bitswan_processors = []
@@ -71,6 +88,8 @@ class DevRuntime:
 
 
 def auto_pipeline(source=None, sink=None, name=None):
+    global __bitswan_autopipeline_count
+
     if source is None:
         raise Exception(
             "When calling auto_pipeline must specify a function that returns a source."
@@ -80,7 +99,22 @@ def auto_pipeline(source=None, sink=None, name=None):
             "When calling auto_pipeline must specify a function that returns a sink."
         )
 
-    global __bitswan_autopipeline_count
+    # Check for Flink runtime
+    runtime = detect_runtime()
+    if runtime == "flink":
+        from bspump.flink import get_flink_runtime
+
+        flink_runtime = get_flink_runtime()
+        pipeline_name = name or f"auto_pipeline_{__bitswan_autopipeline_count}"
+        # Detect adapter types from source/sink function names if possible
+        source_adapter = "KafkaSource"
+        sink_adapter = "KafkaSink"
+        flink_runtime.new_pipeline(
+            pipeline_name, source_adapter=source_adapter, sink_adapter=sink_adapter
+        )
+        __bitswan_autopipeline_count += 1
+        return
+
     if name is None:
         pipeline_name = f"auto_pipeline_{__bitswan_autopipeline_count}"
     else:
@@ -482,6 +516,13 @@ def step(func: Callable[[Any], Any]):
     Args:
         func (Callable[[Any], Any]): Function to be registered as a processor
     """
+    # Check for Flink runtime
+    runtime = detect_runtime()
+    if runtime == "flink":
+        from bspump.flink import get_flink_runtime
+
+        return get_flink_runtime().register_step(func)
+
     global __bitswan_processors
     global __bitswan_dev
     global __bitswan_dev_runtime
@@ -506,6 +547,13 @@ def step(func: Callable[[Any], Any]):
 
 
 def async_step(func):
+    # Check for Flink runtime
+    runtime = detect_runtime()
+    if runtime == "flink":
+        from bspump.flink import get_flink_runtime
+
+        return get_flink_runtime().register_async_step(func)
+
     # Convert function name from snake case to CamelCase and create a unique class name
     global __bitswan_dev
     class_name = snake_to_camel_case(func.__name__) + "Generator"
