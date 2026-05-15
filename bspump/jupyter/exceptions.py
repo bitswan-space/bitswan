@@ -20,6 +20,7 @@ class SkipEvent(Exception):
         # This code only runs for non-spam events
         event["processed"] = True
     """
+
     pass
 
 
