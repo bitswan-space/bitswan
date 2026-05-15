@@ -1,4 +1,0 @@
-# BitSwan automatic documentation
-
-::: bspump    
-

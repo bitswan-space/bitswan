@@ -1,4 +1,4 @@
-# BitSwan Secrets Management
+# Secrets Management
 
 ## Overview
 
@@ -15,6 +15,7 @@ BitSwan uses environment files to manage secrets and sensitive configuration val
 ### 1. Create Environment File
 
 Create a file in the secrets directory (e.g., `foo`):
+
 ```txt
 FOO=foo
 ```
@@ -53,9 +54,29 @@ production = ["foo-prod"]
 - In automations: Environment variables (e.g., `$FOO`) will be automatically available.
 - In Jupyter notebooks: Environment variables are set automatically after importing the `bspump` library. Secrets are loaded as if the automation is running in the **dev** stage.
 
+## Using Secrets in Configuration
+
+Reference secrets in `pipelines.conf` using environment variable syntax:
+
+```ini
+[connection:PostgreSQLConnection]
+password=${POSTGRES_PASSWORD}
+
+[connection:KafkaConnection]
+sasl_plain_password=${KAFKA_PASSWORD}
+```
+
 ## Notes
 
 - Each env file in the secrets dir represents a secrets group
 - Secret values are loaded as environment variables
 - Jupyter integration happens automatically with bspump import
 - The automation container receives a `BITSWAN_AUTOMATION_STAGE` environment variable indicating its current stage
+
+## Security Best Practices
+
+1. **Never commit secrets**: Add secrets directory to `.gitignore`
+2. **Use separate secrets per stage**: Production secrets should differ from dev
+3. **Rotate secrets regularly**: Update passwords periodically
+4. **Limit access**: Only grant access to necessary secret groups
+5. **Audit usage**: Monitor which automations access which secrets

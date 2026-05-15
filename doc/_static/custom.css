@@ -1,0 +1,79 @@
+/* Custom CSS for BSPump Documentation */
+
+/* BitSwan brand colors */
+:root {
+    --bitswan-blue: #0066cc;
+    --bitswan-blue-light: #4da6ff;
+}
+
+/* Header styling */
+.sidebar-brand-text {
+    font-weight: 600;
+}
+
+/* Code block enhancements */
+.highlight {
+    border-radius: 6px;
+}
+
+/* Admonition styling */
+.admonition {
+    border-radius: 6px;
+}
+
+/* Card styling for sphinx-design */
+.sd-card {
+    border-radius: 8px;
+    transition: box-shadow 0.2s ease-in-out;
+}
+
+.sd-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Landing page hero section */
+.hero-section {
+    text-align: center;
+    padding: 2rem 0;
+    margin-bottom: 2rem;
+}
+
+.hero-section h1 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+}
+
+.hero-tagline {
+    font-size: 1.2rem;
+    color: var(--color-foreground-secondary);
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+/* Feature grid styling */
+.feature-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin: 2rem 0;
+}
+
+/* API reference module styling */
+.py.class > dt,
+.py.function > dt,
+.py.method > dt {
+    background-color: var(--color-background-secondary);
+    padding: 0.5rem;
+    border-radius: 4px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .hero-section h1 {
+        font-size: 1.8rem;
+    }
+
+    .hero-tagline {
+        font-size: 1rem;
+    }
+}
