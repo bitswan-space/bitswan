@@ -2,7 +2,7 @@ name: Deploy Sphinx Documentation via FTPS
 
 on:
   push:
-    branches: [ main ]
+    branches: [ master ]
 
 jobs:
   build_and_deploy:
