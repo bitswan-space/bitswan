@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
-import { backend, getUserInfo, getAccessToken, getImageUrl, getTokenInfo, type UserInfo, type TokenInfo } from './api'
+import { backend, getUserInfo, getAccessToken, refreshAccessToken, getImageUrl, getTokenInfo, type UserInfo, type TokenInfo } from './api'
 import './App.css'
 
 interface RootResponse {
@@ -93,6 +93,22 @@ function App() {
     }, 1000)
     return () => clearInterval(interval)
   }, [])
+
+  // Proactively refresh the access token ~60s before it expires. Without this,
+  // the cached JWT goes stale at the 15m Keycloak access-token TTL and the
+  // oauth2-proxy session cookie isn't pinged often enough to trigger the
+  // 14m cookie_refresh, so the user gets bounced back to login.
+  const expiryEpoch = tokenInfo?.expiresAt.getTime()
+  useEffect(() => {
+    if (expiryEpoch == null) return
+    const refreshInMs = Math.max(0, expiryEpoch - Date.now() - 60_000)
+    const timer = setTimeout(() => {
+      refreshAccessToken()
+        .then(() => setTokenInfo(getTokenInfo()))
+        .catch(err => console.error('Failed to refresh access token:', err))
+    }, refreshInMs)
+    return () => clearTimeout(timer)
+  }, [expiryEpoch])
 
   const incrementCount = async () => {
     try {

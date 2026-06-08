@@ -58,6 +58,14 @@ export async function getAccessToken(): Promise<string> {
   return fetchAccessToken()
 }
 
+// Force a re-fetch from /oauth2/auth. Calling this while the oauth2-proxy
+// cookie is older than OAUTH2_PROXY_COOKIE_REFRESH (14m) causes oauth2-proxy
+// to refresh the Keycloak session, so it doubles as a keep-alive.
+export async function refreshAccessToken(): Promise<string> {
+  cachedToken = null
+  return fetchAccessToken()
+}
+
 export interface TokenInfo {
   expiresAt: Date
   issuedAt: Date
